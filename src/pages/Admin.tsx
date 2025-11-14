@@ -6,10 +6,25 @@ import ManualClientApproval from '@/components/ManualClientApproval';
 import CreateAdminUser from '@/components/CreateAdminUser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { Shield, Users, Loader2, DollarSign, Activity, Monitor, AlertTriangle, UserX, Clock, CheckCircle2 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { 
+  Shield, Users, Loader2, DollarSign, Activity, Monitor, 
+  AlertTriangle, Clock, CheckCircle2, XCircle, Trash2, 
+  ArrowLeft, Radio, UserX
+} from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
+
+interface Stats {
+  totalClients: number;
+  activeSubscriptions: number;
+  onlineUsers: number;
+  totalRevenue: number;
+  expiringIn7Days: number;
+  expired: number;
+}
 
 interface Client {
   id: string;
@@ -17,32 +32,36 @@ interface Client {
   created_at: string;
 }
 
-interface Subscription {
+interface AuthorizedDevice {
   id: string;
   user_id: string;
-  plan_type: string;
-  amount: number;
+  ip_address: string;
+  user_agent: string;
+  device_type: string;
+  browser: string;
+  os: string;
+  score: number;
   status: string;
-  end_date: string;
+  first_seen: string;
+  last_seen: string;
 }
 
-interface Session {
+interface SuspiciousActivity {
   id: string;
-  user_id: string;
-  device_info: string;
   ip_address: string;
-  last_seen: string;
-  is_online: boolean;
+  user_agent: string;
+  activity_type: string;
+  reason: string;
+  severity: string;
+  status: string;
+  device_info: any;
+  created_at: string;
 }
 
 const Admin = () => {
   const { user, loading: authLoading, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [clients, setClients] = useState<Client[]>([]);
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<Stats>({
     totalClients: 0,
     activeSubscriptions: 0,
     onlineUsers: 0,
@@ -50,7 +69,10 @@ const Admin = () => {
     expiringIn7Days: 0,
     expired: 0
   });
-  const [activityLogs, setActivityLogs] = useState<any[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [devices, setDevices] = useState<AuthorizedDevice[]>([]);
+  const [suspiciousActivities, setSuspiciousActivities] = useState<SuspiciousActivity[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!authLoading) {
@@ -71,57 +93,63 @@ const Admin = () => {
 
   const loadData = async () => {
     try {
-      // Load clients
-      const { data: clientsData, error: clientsError } = await (supabase as any)
+      setLoading(true);
+
+      const { data: clientsData, error: clientsError } = await supabase
         .from('profiles')
         .select('id, email, created_at')
         .order('created_at', { ascending: false });
 
       if (clientsError) throw clientsError;
-      setClients((clientsData as any) || []);
+      setClients(clientsData || []);
 
-      // Load subscriptions
-      const { data: subsData, error: subsError } = await (supabase as any)
+      const { data: subsData, error: subsError } = await supabase
         .from('subscriptions')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false});
 
       if (subsError) throw subsError;
-      setSubscriptions((subsData as any) || []);
 
-      // Load sessions
-      const { data: sessionsData, error: sessionsError } = await (supabase as any)
+      const { data: sessionsData, error: sessionsError } = await supabase
         .from('user_sessions')
         .select('*')
         .order('last_seen', { ascending: false });
 
       if (sessionsError) throw sessionsError;
-      setSessions((sessionsData as any) || []);
 
-      const activeCount = ((subsData as any[])?.filter((s: any) => s.status === 'active') || []).length;
-      const onlineCount = ((sessionsData as any[])?.filter((s: any) => s.is_online) || []).length;
-      const revenue = ((subsData as any[])?.reduce((sum: number, s: any) => sum + Number(s.amount), 0)) || 0;
+      const { data: devicesData, error: devicesError } = await supabase
+        .from('authorized_devices')
+        .select('*')
+        .order('last_seen', { ascending: false });
+
+      if (devicesError) throw devicesError;
+      setDevices(devicesData || []);
+
+      const { data: suspiciousData, error: suspiciousError } = await supabase
+        .from('suspicious_activities')
+        .select('*')
+        .eq('status', 'new')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (suspiciousError) throw suspiciousError;
+      setSuspiciousActivities(suspiciousData || []);
+
+      const activeCount = (subsData || []).filter((s: any) => s.status === 'active').length;
+      const onlineCount = (sessionsData || []).filter((s: any) => s.is_online).length;
+      const revenue = (subsData || []).reduce((sum: number, s: any) => sum + Number(s.amount), 0);
       
       const now = new Date();
       const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      const expiringCount = ((subsData as any[])?.filter((s: any) => {
+      const expiringCount = (subsData || []).filter((s: any) => {
         const endDate = new Date(s.end_date);
         return s.status === 'active' && endDate > now && endDate <= sevenDaysFromNow;
-      }) || []).length;
+      }).length;
       
-      const expiredCount = ((subsData as any[])?.filter((s: any) => {
+      const expiredCount = (subsData || []).filter((s: any) => {
         const endDate = new Date(s.end_date);
         return endDate <= now;
-      }) || []).length;
-
-      // Load activity logs
-      const { data: logsData } = await (supabase as any)
-        .from('user_activity_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
-      
-      setActivityLogs((logsData as any) || []);
+      }).length;
 
       setStats({
         totalClients: clientsData?.length || 0,
@@ -131,356 +159,442 @@ const Admin = () => {
         expiringIn7Days: expiringCount,
         expired: expiredCount
       });
-    } catch (error) {
+
+    } catch (error: any) {
       console.error('Error loading data:', error);
+      toast.error('Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
   };
 
   const setupRealtimeSubscriptions = () => {
-    // Subscribe to sessions changes
-    const sessionsChannel = supabase
-      .channel('admin-sessions')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_sessions'
-        },
-        () => {
-          loadData();
-        }
-      )
-      .subscribe();
-
-    // Subscribe to subscriptions changes
-    const subsChannel = supabase
-      .channel('admin-subscriptions')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'subscriptions'
-        },
-        () => {
-          loadData();
-        }
-      )
+    const channel = supabase
+      .channel('admin-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, loadData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, loadData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_sessions' }, loadData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'authorized_devices' }, loadData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'suspicious_activities' }, loadData)
       .subscribe();
 
     return () => {
-      supabase.removeChannel(sessionsChannel);
-      supabase.removeChannel(subsChannel);
+      supabase.removeChannel(channel);
     };
   };
 
-  if (authLoading || !isAdmin) {
+  const handleBlockDevice = async (deviceId: string) => {
+    try {
+      const { error } = await supabase
+        .from('authorized_devices')
+        .update({ status: 'blocked' })
+        .eq('id', deviceId);
+
+      if (error) throw error;
+      toast.success('Dispositivo bloqueado');
+      loadData();
+    } catch (error: any) {
+      toast.error('Erro ao bloquear dispositivo');
+    }
+  };
+
+  const handleDeleteDevice = async (deviceId: string) => {
+    try {
+      const { error } = await supabase
+        .from('authorized_devices')
+        .delete()
+        .eq('id', deviceId);
+
+      if (error) throw error;
+      toast.success('Dispositivo removido');
+      loadData();
+    } catch (error: any) {
+      toast.error('Erro ao remover dispositivo');
+    }
+  };
+
+  const handleBlockSuspiciousActivity = async (activityId: string, ipAddress: string) => {
+    try {
+      const { error: activityError } = await supabase
+        .from('suspicious_activities')
+        .update({ status: 'blocked' })
+        .eq('id', activityId);
+
+      if (activityError) throw activityError;
+
+      const { error: blacklistError } = await supabase
+        .from('ip_blacklist')
+        .insert({
+          ip_address: ipAddress,
+          reason: 'Atividade suspeita detectada',
+          blocked_by: user?.id
+        });
+
+      if (blacklistError && blacklistError.code !== '23505') throw blacklistError;
+
+      toast.success('IP bloqueado com sucesso');
+      loadData();
+    } catch (error: any) {
+      toast.error('Erro ao bloquear IP');
+    }
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical': return 'bg-destructive text-destructive-foreground';
+      case 'high': return 'bg-orange-500 text-white';
+      case 'medium': return 'bg-yellow-500 text-black';
+      case 'low': return 'bg-blue-500 text-white';
+      default: return 'bg-muted text-muted-foreground';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-500 text-white';
+      case 'blocked': return 'bg-destructive text-destructive-foreground';
+      case 'suspicious': return 'bg-yellow-500 text-black';
+      default: return 'bg-muted text-muted-foreground';
+    }
+  };
+
+  if (authLoading || loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-[1600px]">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 pb-6 border-b border-primary/20">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <div className="rounded-xl bg-primary/10 p-3 border border-primary/30">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-primary">
+              <h1 className="text-4xl font-bold flex items-center gap-3">
+                <Shield className="h-10 w-10 text-primary" />
                 Painel Administrativo
               </h1>
-              <p className="text-muted-foreground mt-1">Controle total em tempo real</p>
+              <p className="text-muted-foreground mt-2">
+                Gerencie clientes, administradores e controle de acesso
+              </p>
             </div>
           </div>
-          <Badge className="ml-auto px-4 py-2 bg-primary/20 text-primary border-primary/30">
-            <Shield className="mr-2 h-4 w-4" />
-            Admin
-          </Badge>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          <Card className="bg-gradient-to-br from-chart-2/20 to-chart-2/5 border-chart-2/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Users className="h-5 w-5 text-chart-2" />
-              </div>
-              <div className="text-3xl font-bold text-chart-2">{stats.totalClients}</div>
-              <p className="text-sm text-muted-foreground mt-1">Total de Clientes</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-admin-info/20 to-admin-info/5 border-admin-info/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Activity className="h-5 w-5 text-admin-info" />
-              </div>
-              <div className="text-3xl font-bold text-admin-info flex items-center gap-2">
-                {stats.onlineUsers}
-                <span className="inline-block w-2 h-2 bg-admin-info rounded-full animate-pulse"></span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">Online Agora</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-admin-success/20 to-admin-success/5 border-admin-success/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <CheckCircle2 className="h-5 w-5 text-admin-success" />
-              </div>
-              <div className="text-3xl font-bold text-admin-success">{stats.activeSubscriptions}</div>
-              <p className="text-sm text-muted-foreground mt-1">Clientes Ativos</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-admin-warning/20 to-admin-warning/5 border-admin-warning/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Clock className="h-5 w-5 text-admin-warning" />
-              </div>
-              <div className="text-3xl font-bold text-admin-warning">{stats.expiringIn7Days}</div>
-              <p className="text-sm text-muted-foreground mt-1">Expirando em 7 dias</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-admin-danger/20 to-admin-danger/5 border-admin-danger/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <UserX className="h-5 w-5 text-admin-danger" />
-              </div>
-              <div className="text-3xl font-bold text-admin-danger">{stats.expired}</div>
-              <p className="text-sm text-muted-foreground mt-1">Expirados</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-              </div>
-              <div className="text-3xl font-bold text-primary">R$ {stats.totalRevenue.toFixed(0)}</div>
-              <p className="text-sm text-muted-foreground mt-1">Receita Total</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Forms Column */}
-          <div className="space-y-6">
-            <CreateClientWithSubscription onClientCreated={loadData} />
-            <ManualClientApproval onApprovalComplete={loadData} />
-            <CreateAdminUser onAdminCreated={loadData} />
-          </div>
-
-          {/* Clients List */}
-          <Card className="border-primary/20 xl:col-span-2">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Users className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Clientes Cadastrados</CardTitle>
-                  <CardDescription>
-                    {stats.totalClients} clientes no total
-                  </CardDescription>
-                </div>
-              </div>
+        {/* Estatísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="border-blue-500/20">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Total de Clientes</CardTitle>
+              <Users className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </div>
-              ) : clients.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  Nenhum cliente cadastrado
-                </p>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-2 pr-4">
-                    {clients.map((client) => {
-                      const sub = subscriptions.find(s => s.user_id === client.id && s.status === 'active');
-                      return (
-                        <div
-                          key={client.id}
-                          className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-border/50 hover:border-primary/30 transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                                {client.email.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="text-sm font-medium">{client.email}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(client.created_at).toLocaleDateString('pt-BR')}
-                              </p>
-                            </div>
-                          </div>
-                          {sub && (
-                            <Badge className="bg-admin-success/20 text-admin-success border-admin-success/30">
-                              Ativo
-                            </Badge>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </ScrollArea>
-              )}
+              <div className="text-3xl font-bold text-blue-500">{stats.totalClients}</div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Grid for Devices and Suspicious Activity */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Devices */}
           <Card className="border-primary/20">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-admin-info/10 p-2">
-                  <Monitor className="h-5 w-5 text-admin-info" />
-                </div>
-                <div>
-                  <CardTitle>Dispositivos Autorizados</CardTitle>
-                  <CardDescription>
-                    {sessions.filter(s => s.is_online).length}/{sessions.length} online agora
-                  </CardDescription>
-                </div>
-              </div>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Radio className="h-4 w-4 text-primary animate-pulse" />
+                Online Agora
+              </CardTitle>
+              <Activity className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-admin-info" />
-                </div>
-              ) : sessions.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  Nenhum dispositivo conectado
-                </p>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-3 pr-4">
-                    {sessions.map((session) => {
-                      const client = clients.find(c => c.id === session.user_id);
-                      return (
-                        <div
-                          key={session.id}
-                          className="flex items-start justify-between p-4 rounded-lg bg-card/50 border border-border/50"
-                        >
-                          <div className="flex items-start gap-3 flex-1">
-                            <div className="mt-1">
-                              <Monitor className="h-4 w-4 text-admin-info" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-mono text-sm font-bold text-admin-info">{session.ip_address || 'N/A'}</p>
-                              <p className="text-xs text-muted-foreground truncate mt-1">
-                                {session.device_info || 'Dispositivo desconhecido'}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Último: {new Date(session.last_seen).toLocaleString('pt-BR')}
-                              </p>
-                              <p className="text-xs mt-1">
-                                <span className="text-muted-foreground">Usuário:</span>{' '}
-                                <span className="text-foreground">{client?.email}</span>
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-end gap-2">
-                            {session.is_online ? (
-                              <Badge className="bg-admin-success/20 text-admin-success border-admin-success/30">
-                                <span className="inline-block w-2 h-2 bg-admin-success rounded-full mr-1 animate-pulse"></span>
-                                Ativo
-                              </Badge>
-                            ) : (
-                              <Badge variant="secondary">Offline</Badge>
-                            )}
-                            <div className="text-xs text-right">
-                              <div className="text-muted-foreground">Score:</div>
-                              <div className="font-mono font-bold text-admin-success">100/100</div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </ScrollArea>
-              )}
+              <div className="text-3xl font-bold text-primary">{stats.onlineUsers}</div>
             </CardContent>
           </Card>
 
-          {/* Suspicious Activity */}
-          <Card className="border-admin-danger/30 bg-admin-danger/5">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-admin-danger/20 p-2">
-                  <AlertTriangle className="h-5 w-5 text-admin-danger" />
-                </div>
-                <div>
-                  <CardTitle>Atividades Suspeitas</CardTitle>
-                  <CardDescription>
-                    Tentativas de acesso não autorizado
-                  </CardDescription>
-                </div>
-              </div>
+          <Card className="border-green-500/20">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Clientes Ativos</CardTitle>
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-admin-danger" />
-                </div>
-              ) : activityLogs.length === 0 ? (
-                <div className="text-center py-8">
-                  <CheckCircle2 className="h-12 w-12 text-admin-success mx-auto mb-2" />
-                  <p className="text-muted-foreground">Nenhuma atividade suspeita detectada</p>
-                </div>
-              ) : (
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-3 pr-4">
-                    {activityLogs.map((log: any) => (
+              <div className="text-3xl font-bold text-green-500">{stats.activeSubscriptions}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-orange-500/20">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Expirando em 7 dias</CardTitle>
+              <Clock className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-orange-500">{stats.expiringIn7Days}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-destructive/20">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Expirados</CardTitle>
+              <XCircle className="h-4 w-4 text-destructive" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-destructive">{stats.expired}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/20">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
+              <DollarSign className="h-4 w-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">
+                R$ {stats.totalRevenue.toFixed(2)}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="management" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="management">Gerenciamento</TabsTrigger>
+            <TabsTrigger value="clients">Clientes</TabsTrigger>
+            <TabsTrigger value="devices">Dispositivos</TabsTrigger>
+            <TabsTrigger value="security">Segurança</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="management" className="space-y-6">
+            <div className="grid gap-6">
+              <CreateAdminUser />
+              <CreateClientWithSubscription />
+              <ManualClientApproval />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="clients">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Lista de Clientes ({clients.length})
+                </CardTitle>
+                <CardDescription>Emails de todos os clientes cadastrados</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[600px]">
+                  <div className="space-y-2">
+                    {clients.map((client) => (
                       <div
-                        key={log.id}
-                        className="p-4 rounded-lg bg-admin-danger/10 border border-admin-danger/30"
+                        key={client.id}
+                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-admin-danger" />
-                            <p className="font-mono text-sm font-bold text-admin-danger">
-                              {log.ip_address || 'IP Desconhecido'}
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Users className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{client.email}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Cadastrado em: {new Date(client.created_at).toLocaleDateString('pt-BR')}
                             </p>
                           </div>
-                          <Badge className="bg-admin-danger/20 text-admin-danger border-admin-danger/30">
-                            Bloqueado
-                          </Badge>
-                        </div>
-                        <div className="space-y-1 text-xs">
-                          <p className="text-muted-foreground">
-                            {new Date(log.created_at).toLocaleString('pt-BR')}
-                          </p>
-                          <p><span className="text-muted-foreground">Tipo:</span> {log.activity_type}</p>
-                          {log.user_agent && (
-                            <p className="text-muted-foreground truncate">{log.user_agent}</p>
-                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="devices">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Monitor className="h-5 w-5" />
+                      Seus Dispositivos Autorizados
+                    </CardTitle>
+                    <CardDescription>
+                      Dispositivos que podem acessar sua conta ({devices.filter(d => d.status === 'active').length}/{devices.length})
+                    </CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={loadData}>
+                    Atualizar
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[600px]">
+                  <div className="space-y-4">
+                    {devices.map((device) => (
+                      <div
+                        key={device.id}
+                        className="p-6 rounded-lg border border-border bg-card hover:shadow-lg transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <Monitor className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-bold text-lg">{device.ip_address}</p>
+                              <Badge className={getStatusColor(device.status)}>
+                                {device.status === 'active' ? 'Ativo' : device.status === 'blocked' ? 'Bloqueado' : 'Suspeito'}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            {device.status === 'active' && (
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleBlockDevice(device.id)}
+                              >
+                                Bloquear
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteDevice(device.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">Navegador:</span>
+                            <span className="font-medium">{device.browser || 'Desconhecido'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">Sistema:</span>
+                            <span className="font-medium">{device.os || 'Desconhecido'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">Dispositivo:</span>
+                            <span className="font-medium">{device.device_type || 'Desconhecido'}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">Último acesso:</span>
+                            <span className="font-medium">
+                              {new Date(device.last_seen).toLocaleString('pt-BR')}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">Score:</span>
+                            <span className="font-bold text-primary">{device.score}/100</span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground">
+                          <p className="break-all">User-Agent: {device.user_agent}</p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {devices.length === 0 && (
+                      <div className="text-center py-12 text-muted-foreground">
+                        Nenhum dispositivo autorizado
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <Card className="border-destructive/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive">
+                  <AlertTriangle className="h-5 w-5" />
+                  Atividades Suspeitas Detectadas
+                </CardTitle>
+                <CardDescription>
+                  Registro de tentativas de acesso não autorizado - Total: {suspiciousActivities.length}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[600px]">
+                  <div className="space-y-4">
+                    {suspiciousActivities.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="p-6 rounded-lg border-2 border-destructive/20 bg-destructive/5 hover:shadow-lg transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <p className="font-bold text-lg text-destructive mb-2">{activity.ip_address}</p>
+                            <Badge className={getSeverityColor(activity.severity)}>
+                              {activity.severity.toUpperCase()}
+                            </Badge>
+                            <Badge className="ml-2 bg-destructive text-destructive-foreground">
+                              {activity.activity_type}
+                            </Badge>
+                          </div>
+                          {activity.status === 'new' && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleBlockSuspiciousActivity(activity.id, activity.ip_address)}
+                            >
+                              <UserX className="h-4 w-4 mr-2" />
+                              Bloquear IP
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="bg-background/50 p-4 rounded-lg">
+                            <p className="text-sm font-semibold mb-2">Motivo:</p>
+                            <p className="text-sm">{activity.reason}</p>
+                          </div>
+
+                          {activity.device_info && (
+                            <div className="bg-background/50 p-4 rounded-lg">
+                              <p className="text-sm font-semibold mb-2">Informações do Dispositivo:</p>
+                              <div className="space-y-1 text-sm">
+                                <p><span className="text-muted-foreground">Navegador:</span> {activity.device_info.browser}</p>
+                                <p><span className="text-muted-foreground">Sistema:</span> {activity.device_info.os}</p>
+                                <p><span className="text-muted-foreground">Dispositivo:</span> {activity.device_info.device}</p>
+                                {activity.device_info.resolution && (
+                                  <p><span className="text-muted-foreground">Resolução:</span> {activity.device_info.resolution}</p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="text-xs text-muted-foreground">
+                            <p>Detectado em: {new Date(activity.created_at).toLocaleString('pt-BR')}</p>
+                            {activity.user_agent && (
+                              <p className="break-all mt-2">User-Agent: {activity.user_agent}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {suspiciousActivities.length === 0 && (
+                      <div className="text-center py-12">
+                        <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                        <p className="text-lg font-semibold text-green-500">Nenhuma atividade suspeita detectada</p>
+                        <p className="text-muted-foreground mt-2">Seu sistema está seguro</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
