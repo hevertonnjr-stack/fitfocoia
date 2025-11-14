@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      authorized_devices: {
+        Row: {
+          browser: string | null
+          created_at: string | null
+          device_type: string | null
+          first_seen: string | null
+          id: string
+          ip_address: string
+          language: string | null
+          last_seen: string | null
+          os: string | null
+          score: number | null
+          screen_resolution: string | null
+          status: string | null
+          user_agent: string
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          first_seen?: string | null
+          id?: string
+          ip_address: string
+          language?: string | null
+          last_seen?: string | null
+          os?: string | null
+          score?: number | null
+          screen_resolution?: string | null
+          status?: string | null
+          user_agent: string
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          first_seen?: string | null
+          id?: string
+          ip_address?: string
+          language?: string | null
+          last_seen?: string | null
+          os?: string | null
+          score?: number | null
+          screen_resolution?: string | null
+          status?: string | null
+          user_agent?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ip_blacklist: {
+        Row: {
+          blocked_at: string | null
+          blocked_by: string | null
+          expires_at: string | null
+          id: string
+          ip_address: string
+          reason: string
+          status: string | null
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_by?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address: string
+          reason: string
+          status?: string | null
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_by?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: string
+          reason?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -62,6 +143,48 @@ export type Database = {
           start_date?: string
           status?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      suspicious_activities: {
+        Row: {
+          activity_type: string
+          created_at: string | null
+          device_info: Json | null
+          id: string
+          ip_address: string
+          location_info: Json | null
+          metadata: Json | null
+          reason: string
+          severity: string | null
+          status: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          device_info?: Json | null
+          id?: string
+          ip_address: string
+          location_info?: Json | null
+          metadata?: Json | null
+          reason: string
+          severity?: string | null
+          status?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          device_info?: Json | null
+          id?: string
+          ip_address?: string
+          location_info?: Json | null
+          metadata?: Json | null
+          reason?: string
+          severity?: string | null
+          status?: string | null
+          user_agent?: string | null
         }
         Relationships: []
       }
