@@ -1,0 +1,108 @@
+import { Home, Dumbbell, TrendingUp, BookOpen, Users, Crown, Shield, LogOut } from "lucide-react";
+import { NavLink } from "@/components/NavLink";
+import { Outlet } from "react-router-dom";
+import CinematicThemeSwitcher from "@/components/ui/cinematic-theme-switcher";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import fitfocoLogo from '@/assets/fitfoco-logo.png';
+
+const navItems = [
+  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Treinos", url: "/treinos", icon: Dumbbell },
+  { title: "Progresso", url: "/progresso", icon: TrendingUp },
+  { title: "Exercícios", url: "/exercicios", icon: BookOpen },
+  { title: "Comunidade", url: "/comunidade", icon: Users },
+  { title: "Premium", url: "/premium", icon: Crown },
+];
+
+export function Layout() {
+  const { user, isAdmin, signOut } = useAuth();
+  
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-card border-b border-border sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <img src={fitfocoLogo} alt="FitFoco" className="h-10 w-auto" />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">FitFoco</h1>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <nav className="hidden md:flex items-center gap-1">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.url}
+                    to={item.url}
+                    end
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
+                    activeClassName="bg-primary/10 text-primary"
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.title}
+                  </NavLink>
+                ))}
+                {isAdmin && (
+                  <NavLink
+                    to="/admin"
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
+                    activeClassName="bg-primary/10 text-primary"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Admin
+                  </NavLink>
+                )}
+              </nav>
+              
+              <div className="flex items-center gap-2">
+                {user && (
+                  <span className="text-sm text-muted-foreground hidden lg:inline">
+                    {user.email}
+                  </span>
+                )}
+                <div className="scale-75 origin-center">
+                  <CinematicThemeSwitcher />
+                </div>
+                {user && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={signOut}
+                    title="Sair"
+                    className="h-9 w-9"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1">
+        <Outlet />
+      </main>
+
+      {/* Mobile Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+        <div className="flex items-center justify-around h-16">
+          {navItems.slice(0, 5).map((item) => (
+            <NavLink
+              key={item.url}
+              to={item.url}
+              end
+              className="flex flex-col items-center gap-1 px-3 py-2 text-muted-foreground"
+              activeClassName="text-primary"
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-xs">{item.title}</span>
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+    </div>
+  );
+}
