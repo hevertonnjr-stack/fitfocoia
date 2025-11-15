@@ -1,1 +1,19 @@
 project_id = "mkzblwlxkjhsbkvwkdyn"
+
+[functions.setup-admin]
+verify_jwt = false
+
+[functions.track-device]
+verify_jwt = false
+
+[functions.create-client]
+verify_jwt = false
+
+[functions.send-credentials]
+verify_jwt = false
+
+[functions.verify-payment]
+verify_jwt = false
+
+[functions.risepay-webhook]
+verify_jwt = false
