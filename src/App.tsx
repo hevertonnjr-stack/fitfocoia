@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { Layout } from "./components/Layout";
+import { useSetupAdmin } from "./hooks/useSetupAdmin";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Workouts from "./pages/Workouts";
@@ -20,6 +21,29 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => {
+  useSetupAdmin();
+  
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/client-login" element={<ClientLogin />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route element={<Layout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/treinos" element={<Workouts />} />
+        <Route path="/progresso" element={<Progress />} />
+        <Route path="/exercicios" element={<Exercises />} />
+        <Route path="/comunidade" element={<Community />} />
+        <Route path="/premium" element={<Premium />} />
+        <Route path="/admin" element={<Admin />} />
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
@@ -27,23 +51,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/client-login" element={<ClientLogin />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/treinos" element={<Workouts />} />
-              <Route path="/progresso" element={<Progress />} />
-              <Route path="/exercicios" element={<Exercises />} />
-              <Route path="/comunidade" element={<Community />} />
-              <Route path="/premium" element={<Premium />} />
-              <Route path="/admin" element={<Admin />} />
-            </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppContent />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
