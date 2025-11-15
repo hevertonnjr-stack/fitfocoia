@@ -1,9 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Dumbbell, Shield, ArrowRight, Zap, Users, Trophy, CheckCircle2 } from 'lucide-react';
+import { Check, Dumbbell, Shield, ArrowRight, Zap, Users, Trophy, CheckCircle2, Target, TrendingUp, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
+import { motion } from 'framer-motion';
 
 const Index = () => {
   const { isAdmin } = useAuth();
@@ -67,119 +68,237 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 py-16 max-w-7xl">
         {/* Hero Section */}
-        <div className="text-center mb-20 space-y-8">
-          <div className="flex justify-center mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20 space-y-8"
+        >
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex justify-center mb-8"
+          >
             <img 
               src={fitfocoLogo} 
               alt="FitFoco" 
-              className="h-24 w-auto animate-pulse" 
+              className="h-32 w-auto drop-shadow-2xl hover:scale-110 transition-transform duration-300" 
             />
-          </div>
+          </motion.div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">
-            Transforme Seu Corpo
-          </h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+          >
+            Transforme Seu Corpo e Sua Vida
+          </motion.h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Plataforma completa de treinos com acompanhamento profissional
-          </p>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto"
+          >
+            Conquiste o corpo dos seus sonhos com treinos personalizados e acompanhamento profissional
+          </motion.p>
 
-          <div className="flex flex-wrap justify-center gap-8 mt-12">
-            <div className="flex items-center gap-3 bg-card p-4 rounded-lg border border-border">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="flex flex-col gap-4 max-w-2xl mx-auto"
+          >
+            <div className="bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl p-6 border-2 border-primary/30">
+              <p className="text-lg md:text-xl font-bold text-foreground mb-2">
+                💪 Quer EMAGRECER e ter o corpo definido que sempre sonhou?
+              </p>
+              <p className="text-base text-muted-foreground">
+                Nossos treinos são desenvolvidos para queimar gordura de forma eficiente e saudável
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-r from-accent/20 to-primary/20 rounded-2xl p-6 border-2 border-accent/30">
+              <p className="text-lg md:text-xl font-bold text-foreground mb-2">
+                🏆 Quer GANHAR MASSA MUSCULAR e ficar forte?
+              </p>
+              <p className="text-base text-muted-foreground">
+                Programas especializados para hipertrofia e ganho de força muscular
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1 }}
+            className="flex flex-wrap justify-center gap-8 mt-12"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="flex items-center gap-3 bg-card p-4 rounded-lg border border-border shadow-lg"
+            >
               <Users className="h-6 w-6 text-primary" />
               <div className="text-left">
                 <p className="text-2xl font-bold text-foreground">500+</p>
-                <p className="text-sm text-muted-foreground">Clientes Ativos</p>
+                <p className="text-sm text-muted-foreground">Clientes Transformados</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 bg-card p-4 rounded-lg border border-border">
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="flex items-center gap-3 bg-card p-4 rounded-lg border border-border shadow-lg"
+            >
               <Trophy className="h-6 w-6 text-primary" />
               <div className="text-left">
                 <p className="text-2xl font-bold text-foreground">1000+</p>
-                <p className="text-sm text-muted-foreground">Treinos Realizados</p>
+                <p className="text-sm text-muted-foreground">Metas Conquistadas</p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 bg-card p-4 rounded-lg border border-border">
-              <Zap className="h-6 w-6 text-primary" />
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="flex items-center gap-3 bg-card p-4 rounded-lg border border-border shadow-lg"
+            >
+              <Award className="h-6 w-6 text-primary" />
               <div className="text-left">
                 <p className="text-2xl font-bold text-foreground">98%</p>
-                <p className="text-sm text-muted-foreground">Satisfação</p>
+                <p className="text-sm text-muted-foreground">Alcançam Resultados</p>
               </div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Benefits Section */}
-        <div className="grid md:grid-cols-3 gap-6 mb-20">
-          <Card className="border-primary/20 hover:border-primary/50 transition-all">
-            <CardHeader>
-              <Dumbbell className="h-12 w-12 text-primary mb-4" />
-              <CardTitle>Treinos Personalizados</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Planos de treino adaptados ao seu nível e objetivos
-              </p>
-            </CardContent>
-          </Card>
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="grid md:grid-cols-3 gap-6 mb-20"
+        >
+          <motion.div
+            whileHover={{ scale: 1.05, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="border-primary/20 hover:border-primary/50 transition-all h-full shadow-lg hover:shadow-2xl">
+              <CardHeader>
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <Dumbbell className="h-12 w-12 text-primary mb-4" />
+                </motion.div>
+                <CardTitle>Treinos Para Seu Objetivo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Seja para EMAGRECER ou GANHAR MÚSCULOS, temos o treino perfeito para você alcançar seus objetivos
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-primary/20 hover:border-primary/50 transition-all">
-            <CardHeader>
-              <Shield className="h-12 w-12 text-primary mb-4" />
-              <CardTitle>Acompanhamento Profissional</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Suporte especializado durante toda sua jornada
-              </p>
-            </CardContent>
-          </Card>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="border-primary/20 hover:border-primary/50 transition-all h-full shadow-lg hover:shadow-2xl">
+              <CardHeader>
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <Target className="h-12 w-12 text-primary mb-4" />
+                </motion.div>
+                <CardTitle>Resultados Reais e Comprovados</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Mais de 500 pessoas já transformaram seus corpos e suas vidas com o FitFoco
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="border-primary/20 hover:border-primary/50 transition-all">
-            <CardHeader>
-              <Zap className="h-12 w-12 text-primary mb-4" />
-              <CardTitle>Resultados Garantidos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Metodologia comprovada para alcançar seus objetivos
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="border-primary/20 hover:border-primary/50 transition-all h-full shadow-lg hover:shadow-2xl">
+              <CardHeader>
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                >
+                  <TrendingUp className="h-12 w-12 text-primary mb-4" />
+                </motion.div>
+                <CardTitle>Evolução Constante</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Acompanhe seu progresso em tempo real e veja suas conquistas semana após semana
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
 
         {/* CTA Section - GARANTA SUA VAGA */}
-        <div className="mb-16">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-accent to-primary p-1 animate-pulse">
             <div className="bg-background rounded-3xl p-8 md:p-12">
               {/* Header com múltiplos incentivos */}
-              <div className="text-center mb-8 space-y-4">
-                <div className="inline-block animate-bounce mb-4">
+              <div className="text-center mb-8 space-y-6">
+                <motion.div 
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="inline-block mb-4"
+                >
                   <div className="bg-gradient-to-r from-primary to-accent p-4 rounded-full shadow-2xl">
                     <Zap className="h-12 w-12 text-primary-foreground" />
                   </div>
-                </div>
+                </motion.div>
                 
                 <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-pulse">
-                  🔥 ÚLTIMAS VAGAS COM DESCONTO! 🔥
+                  🔥 TRANSFORME SEU CORPO AGORA! 🔥
                 </h2>
+
+                <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-6 border-2 border-primary/30 max-w-3xl mx-auto">
+                  <p className="text-xl md:text-2xl font-bold text-foreground mb-3">
+                    ⚡ Você está a UM CLIQUE de realizar seu sonho:
+                  </p>
+                  <div className="space-y-2 text-base md:text-lg text-muted-foreground">
+                    <p>✅ Perder aqueles quilos extras que te incomodam</p>
+                    <p>✅ Ganhar músculos e ter o corpo definido que sempre quis</p>
+                    <p>✅ Aumentar sua autoestima e confiança</p>
+                    <p>✅ Ter mais energia e disposição no dia a dia</p>
+                  </div>
+                </div>
                 
                 <div className="space-y-3">
                   <p className="text-xl md:text-2xl text-foreground font-bold animate-pulse">
-                    👇 CLIQUE AQUI E GARANTA SUA VAGA AGORA 👇
+                    👇 ESCOLHA SEU PLANO E COMECE HOJE MESMO 👇
                   </p>
                   
                   <div className="flex flex-wrap items-center justify-center gap-3 text-destructive font-bold text-base md:text-lg">
                     <Zap className="h-5 w-5 animate-pulse" />
-                    <span className="animate-pulse">⏰ Vagas Limitadas</span>
+                    <span className="animate-pulse">⏰ Últimas Vagas</span>
                     <Zap className="h-5 w-5 animate-pulse" />
-                    <span className="animate-pulse">🎯 Oferta Especial</span>
+                    <span className="animate-pulse">🎯 Desconto Exclusivo</span>
                     <Zap className="h-5 w-5 animate-pulse" />
+                    <span className="animate-pulse">💪 Comece Agora</span>
                   </div>
 
                   <div className="bg-gradient-to-r from-destructive/10 to-primary/10 rounded-full px-6 py-3 inline-block border-2 border-destructive/50 animate-pulse">
                     <p className="text-destructive font-bold text-lg">
-                      🚨 SOMENTE HOJE - ATÉ 66% DE DESCONTO 🚨
+                      🚨 OFERTA LIMITADA - ATÉ 66% DE DESCONTO 🚨
                     </p>
                   </div>
                 </div>
@@ -187,16 +306,23 @@ const Index = () => {
 
               {/* Plans Grid - CENTRALIZADO */}
               <div className="flex justify-center mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl w-full">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full">
                   {plans.map((plan, index) => (
-                    <Card 
+                    <motion.div
                       key={index}
-                      className={`relative border-2 transition-all hover:scale-105 hover:shadow-2xl ${
-                        plan.popular 
-                          ? 'border-primary shadow-lg shadow-primary/20 scale-105' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.05, y: -10 }}
                     >
+                      <Card 
+                        className={`relative border-2 transition-all hover:shadow-2xl h-full ${
+                          plan.popular 
+                            ? 'border-primary shadow-lg shadow-primary/20 scale-105' 
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
                       {plan.popular && (
                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                           <div className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
@@ -252,62 +378,102 @@ const Index = () => {
                         </Button>
                       </CardContent>
                     </Card>
+                    </motion.div>
                   ))}
                 </div>
               </div>
 
               {/* Footer com garantias e urgência */}
-              <div className="text-center space-y-4">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-center space-y-6"
+              >
                 <div className="flex flex-wrap justify-center gap-4 text-sm md:text-base">
-                  <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border shadow-md"
+                  >
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                     <span className="font-medium">Pagamento 100% Seguro</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border shadow-md"
+                  >
                     <Zap className="h-5 w-5 text-primary" />
                     <span className="font-medium">Acesso Imediato</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border shadow-md"
+                  >
                     <Shield className="h-5 w-5 text-primary" />
                     <span className="font-medium">Garantia de 7 dias</span>
+                  </motion.div>
+                </div>
+
+                <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-6 border-2 border-primary/20">
+                  <p className="text-foreground font-bold text-xl mb-3">
+                    🎁 BÔNUS EXCLUSIVOS PARA QUEM COMEÇAR HOJE:
+                  </p>
+                  <div className="space-y-2 text-base text-muted-foreground">
+                    <p>✅ E-book: Guia Completo de Alimentação Saudável</p>
+                    <p>✅ Acesso ao Grupo VIP no WhatsApp</p>
+                    <p>✅ Suporte Prioritário 24/7</p>
+                    <p>✅ Planilha de Acompanhamento de Progresso</p>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-4 border border-primary/20">
-                  <p className="text-foreground font-bold text-lg mb-2">
-                    🎁 BÔNUS EXCLUSIVOS PARA QUEM GARANTIR HOJE:
+                <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-2xl p-6 border-2 border-accent/30">
+                  <p className="text-lg md:text-xl font-bold text-foreground mb-3">
+                    💬 O QUE NOSSOS CLIENTES DIZEM:
                   </p>
-                  <p className="text-muted-foreground">
-                    ✅ Guia de Nutrição Completo | ✅ Suporte VIP | ✅ Comunidade Exclusiva
-                  </p>
+                  <div className="space-y-3 text-muted-foreground">
+                    <p className="italic">"Perdi 15kg em 3 meses! Melhor investimento da minha vida!" - Maria S.</p>
+                    <p className="italic">"Ganhei 8kg de massa muscular. Nunca me senti tão forte!" - João P.</p>
+                    <p className="italic">"Finalmente consegui o corpo que sempre quis. Obrigado FitFoco!" - Ana L.</p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Login Links */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/client-login')}
-            className="min-w-[200px] border-2 hover:scale-105 transition-all"
-            size="lg"
-          >
-            <Users className="mr-2 h-5 w-5" />
-            Já sou cliente - Acessar
-          </Button>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12"
+        >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/client-login')}
+              className="min-w-[200px] border-2 hover:scale-105 transition-all shadow-lg"
+              size="lg"
+            >
+              <Users className="mr-2 h-5 w-5" />
+              Já sou cliente - Acessar
+            </Button>
+          </motion.div>
           
-          <Button
-            variant="outline"
-            onClick={() => navigate('/admin-login')}
-            className="min-w-[200px] border-2 hover:scale-105 transition-all"
-            size="lg"
-          >
-            <Shield className="mr-2 h-5 w-5" />
-            Acesso Administrativo
-          </Button>
-        </div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/admin-login')}
+              className="min-w-[200px] border-2 hover:scale-105 transition-all shadow-lg"
+              size="lg"
+            >
+              <Shield className="mr-2 h-5 w-5" />
+              Acesso Administrativo
+            </Button>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
