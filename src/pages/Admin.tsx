@@ -29,6 +29,8 @@ interface Client {
   id: string;
   email: string;
   created_at: string;
+  user_display_id?: string;
+  full_name?: string;
 }
 
 interface AuthorizedDevice {
@@ -86,7 +88,7 @@ const Admin = () => {
 
       const { data: clientsData, error: clientsError } = await supabase
         .from('profiles')
-        .select('id, email, created_at')
+        .select('id, email, created_at, user_display_id, full_name')
         .order('created_at', { ascending: false });
 
       if (clientsError) throw clientsError;
@@ -386,6 +388,14 @@ const Admin = () => {
                           </div>
                           <div>
                             <p className="font-medium">{client.email}</p>
+                            {client.user_display_id && (
+                              <p className="text-sm text-muted-foreground font-mono">
+                                ID: <span className="text-primary font-bold">{client.user_display_id}</span>
+                              </p>
+                            )}
+                            {client.full_name && (
+                              <p className="text-sm text-muted-foreground">{client.full_name}</p>
+                            )}
                             <p className="text-xs text-muted-foreground">
                               Cadastrado em: {new Date(client.created_at).toLocaleDateString('pt-BR')}
                             </p>

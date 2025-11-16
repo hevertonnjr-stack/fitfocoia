@@ -13,17 +13,24 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, isAdmin, loading: authLoading } = useAuth();
+  const { signIn, isAdmin, user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Redireciona se já estiver logado como admin
   useEffect(() => {
     if (!authLoading && isAdmin) {
-      console.log('Já está logado como admin, redirecionando...');
+      console.log('Admin autenticado, redirecionando para painel');
       navigate('/admin', { replace: true });
+    } else if (!authLoading && user && !isAdmin) {
+      console.log('Usuário não é admin, bloqueando acesso');
+      toast({
+        title: "Acesso Negado",
+        description: "Você não tem permissão para acessar esta área.",
+        variant: "destructive",
+      });
+      navigate('/', { replace: true });
     }
-  }, [isAdmin, authLoading, navigate]);
+  }, [isAdmin, authLoading, user, navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +100,7 @@ const AdminLogin = () => {
         <Card className="shadow-2xl border-primary/10">
           <CardHeader className="space-y-3 text-center">
             <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-primary/10 p-4">
+              <div className="rounded-full bg-primary/10 p-4 ring-4 ring-primary/20">
                 <Shield className="h-12 w-12 text-primary" />
               </div>
             </div>
@@ -101,8 +108,13 @@ const AdminLogin = () => {
               Acesso Administrativo
             </CardTitle>
             <CardDescription className="text-base">
-              Área restrita para administradores
+              ⚠️ Área restrita e protegida - Apenas administradores autorizados
             </CardDescription>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 mt-4">
+              <p className="text-xs text-destructive font-medium">
+                🔒 AVISO DE SEGURANÇA: Todas as tentativas de acesso são monitoradas e registradas. Acesso não autorizado é crime conforme Lei 12.737/2012.
+              </p>
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

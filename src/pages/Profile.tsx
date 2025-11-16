@@ -212,6 +212,16 @@ export default function Profile() {
                   </div>
                 </div>
 
+                {profile?.user_display_id && (
+                  <div>
+                    <Label>ID de Usuário</Label>
+                    <div className="px-4 py-2 bg-muted rounded-lg border">
+                      <p className="font-mono font-bold text-primary">{profile.user_display_id}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Seu ID único no FitFoco</p>
+                    </div>
+                  </div>
+                )}
+
                 <Button onClick={handleUpdateProfile} disabled={loading} className="w-full md:w-auto">
                   <Save className="w-4 h-4 mr-2" />
                   Salvar Informações
