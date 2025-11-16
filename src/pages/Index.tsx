@@ -5,19 +5,38 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Index = () => {
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const handlePlanClick = (paymentUrl: string) => {
+  const handlePlanClick = async (planType: 'mensal' | 'trimestral' | 'anual') => {
     try {
-      const w = window.open(paymentUrl, '_blank'); // manter referer
-      if (!w) {
-        window.location.href = paymentUrl; // fallback caso popup seja bloqueado
+      // Chamar edge function para gerar link do RisePay
+      const { data, error } = await supabase.functions.invoke('create-risepay-checkout', {
+        body: { plan_type: planType }
+      });
+
+      if (error) {
+        console.error('Erro ao gerar link de pagamento:', error);
+        toast.error('Erro ao processar. Tente novamente.');
+        return;
       }
-    } catch {
-      window.location.href = paymentUrl; // fallback seguro
+
+      const paymentUrl = data.payment_url;
+      console.log('Abrindo link de pagamento:', paymentUrl);
+
+      // Tentar abrir em nova aba primeiro
+      const w = window.open(paymentUrl, '_blank');
+      if (!w || w.closed) {
+        // Se bloqueado, abrir na mesma aba
+        window.location.href = paymentUrl;
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      toast.error('Erro ao processar pagamento. Tente novamente.');
     }
   };
   const plans = [
@@ -25,7 +44,7 @@ const Index = () => {
       name: 'Plano Mensal',
       price: 'R$ 24,90',
       period: '/mês',
-      paymentUrl: 'https://pay.risepay.com.br/checkout/th123',
+      planType: 'mensal' as const,
       features: [
         'Acesso completo ao app',
         'Todos os treinos',
@@ -41,7 +60,7 @@ const Index = () => {
       period: '/3 meses',
       popular: true,
       discount: '35% OFF',
-      paymentUrl: 'https://pay.risepay.com.br/Pay/d2f3a83336804015a1823178ea60c940',
+      planType: 'trimestral' as const,
       features: [
         'Acesso completo ao app',
         'Todos os treinos',
@@ -57,7 +76,7 @@ const Index = () => {
       originalPrice: 'R$ 298,80',
       period: '/ano',
       discount: '66% OFF',
-      paymentUrl: 'https://pay.risepay.com.br/Pay/7ed7396bb1e84636b5d11c1aee69e474',
+      planType: 'anual' as const,
       features: [
         'Acesso completo ao app',
         'Todos os treinos',
@@ -371,7 +390,7 @@ const Index = () => {
                         </ul>
 
                         <Button
-                          onClick={() => handlePlanClick(plan.paymentUrl)}
+                          onClick={() => handlePlanClick(plan.planType)}
                           className={`w-full text-base md:text-lg py-6 font-bold shadow-lg transition-all hover:scale-105 ${
                             plan.popular
                               ? 'bg-gradient-to-r from-primary to-accent hover:opacity-90 animate-pulse'
