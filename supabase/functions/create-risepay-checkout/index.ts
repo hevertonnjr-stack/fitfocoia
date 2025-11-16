@@ -57,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Aqui você fará a chamada real para a API do RisePay
     // Por enquanto, vamos retornar os links fixos que você já tem
     const paymentLinks = {
-      mensal: 'https://pay.risepay.com.br/checkout/th123',
+      mensal: 'https://pay.risepay.com.br/Pay/63b5cd42ee0f49578a63ab025c05f64f',
       trimestral: 'https://pay.risepay.com.br/Pay/d2f3a83336804015a1823178ea60c940',
       anual: 'https://pay.risepay.com.br/Pay/7ed7396bb1e84636b5d11c1aee69e474'
     };
