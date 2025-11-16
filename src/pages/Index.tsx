@@ -92,6 +92,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 py-16 max-w-7xl">
+        <div className="flex justify-end mb-6">
+          <Button
+            variant="secondary"
+            onClick={() => navigate(isAdmin ? '/admin' : '/admin-login')}
+          >
+            {isAdmin ? 'Ir para Painel Admin' : 'Acesso Administrativo'}
+          </Button>
+        </div>
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
