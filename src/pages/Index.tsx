@@ -49,11 +49,14 @@ const Index = () => {
       period: '/mês',
       planType: 'mensal' as const,
       features: [
-        'Acesso completo ao app',
-        'Todos os treinos',
-        'Acompanhamento de progresso',
-        'Suporte prioritário',
-        'Renovação automática'
+        '✓ Acesso completo ao app',
+        '✓ Todos os treinos personalizados',
+        '✓ Scanner de alimentos com IA',
+        '✓ Desafios diários gamificados',
+        '✓ Acompanhamento detalhado',
+        '✓ Suporte IA 24/7',
+        '✓ Comunidade exclusiva',
+        '✓ Renovação automática'
       ]
     },
     {
@@ -65,12 +68,16 @@ const Index = () => {
       discount: '35% OFF',
       planType: 'trimestral' as const,
       features: [
-        'Acesso completo ao app',
-        'Todos os treinos',
-        'Acompanhamento de progresso',
-        'Suporte prioritário',
-        'Economia de 35%',
-        '🔥 Melhor custo-benefício'
+        '✓ Tudo do plano mensal',
+        '✓ Acesso completo ao app',
+        '✓ Todos os treinos + Novidades',
+        '✓ Scanner de alimentos com IA',
+        '✓ Desafios diários gamificados',
+        '✓ Suporte IA 24/7 prioritário',
+        '✓ Comunidade VIP',
+        '✓ Economia de 35%',
+        '🔥 Melhor custo-benefício',
+        '🎁 Bônus exclusivos'
       ]
     },
     {
@@ -81,13 +88,18 @@ const Index = () => {
       discount: '66% OFF',
       planType: 'anual' as const,
       features: [
-        'Acesso completo ao app',
-        'Todos os treinos',
-        'Acompanhamento de progresso',
-        'Suporte prioritário',
-        'Economia de 66%',
+        '✓ Tudo dos planos anteriores',
+        '✓ Acesso vitalício garantido',
+        '✓ Treinos ilimitados + Updates',
+        '✓ Scanner IA premium',
+        '✓ Desafios exclusivos',
+        '✓ Suporte IA 24/7 VIP',
+        '✓ Comunidade Elite',
+        '✓ Consultoria mensal inclusa',
+        '✓ Economia de 66%',
         '💎 Máxima economia',
-        'Pagamento único'
+        '🎁 Bônus Premium',
+        '🏆 Acesso antecipado features'
       ]
     }
   ];
@@ -140,25 +152,46 @@ const Index = () => {
 
   const testimonials = [
     {
-      name: 'João Silva',
-      role: 'Perdeu 15kg em 3 meses',
-      content: 'Incrível! Nunca imaginei que conseguiria resultados tão rápidos. O app é completo e o suporte é excepcional.',
+      name: 'Dr. Carlos Mendes',
+      role: 'Perdeu 18kg em 4 meses • Ex-sedentário',
+      content: 'Como médico, sempre recomendei atividade física, mas eu mesmo não praticava. O FitFoco mudou isso. Os treinos personalizados e o acompanhamento detalhado me motivaram a seguir consistentemente. Hoje me sinto 20 anos mais jovem e sou exemplo para meus pacientes.',
       rating: 5,
-      image: '👨‍💼'
+      image: '👨‍⚕️'
     },
     {
-      name: 'Maria Santos',
-      role: 'Ganhou 5kg de massa muscular',
-      content: 'Os treinos personalizados fizeram toda diferença. Consegui ganhar massa magra e me sinto muito mais forte!',
+      name: 'Ana Paula Costa',
+      role: 'Maratonista • 22kg perdidos em 6 meses',
+      content: 'Após ter meu segundo filho, achei que nunca mais voltaria à forma. O FitFoco provou que eu estava errada. O sistema de desafios diários me manteve engajada, e hoje corro maratonas regularmente. Minha família toda usa o app agora!',
       rating: 5,
-      image: '👩‍🦰'
+      image: '👩‍💼'
     },
     {
-      name: 'Carlos Mendes',
-      role: 'Melhorou condicionamento físico',
-      content: 'Excelente plataforma! A comunidade é muito motivadora e os treinos são desafiadores e eficientes.',
+      name: 'Roberto Almeida',
+      role: 'Ganhou 12kg de massa muscular',
+      content: 'Treinei por anos sem resultados significativos. O FitFoco revolucionou minha abordagem com treinos científicos e acompanhamento de métricas. Em 8 meses ganhei mais massa magra do que nos últimos 3 anos. O investimento valeu cada centavo.',
       rating: 5,
-      image: '👨‍🦱'
+      image: '💪'
+    },
+    {
+      name: 'Juliana Ferreira',
+      role: 'Empresária • Transformação em 90 dias',
+      content: 'Minha rotina corporativa não me deixava tempo para academia. O FitFoco com treinos de 20-30 minutos foi a solução perfeita. Perdi 14kg, ganhei disposição e minha produtividade no trabalho aumentou 40%. Melhor decisão profissional e pessoal!',
+      rating: 5,
+      image: '👔'
+    },
+    {
+      name: 'Marcos Oliveira',
+      role: 'Superou diabetes tipo 2',
+      content: 'Meu médico disse que eu precisava mudar urgentemente. Com o FitFoco, perdi 25kg em 7 meses e meus níveis de glicose normalizaram. Não preciso mais de medicação! A equipe de suporte foi fundamental no processo. Gratidão eterna!',
+      rating: 5,
+      image: '🏆'
+    },
+    {
+      name: 'Camila Rodrigues',
+      role: 'Atleta Fitness • Top 3 em competições',
+      content: 'Mesmo sendo atleta, o FitFoco elevou meu nível. A combinação de treinos científicos, scanner de alimentos e comunidade engajada me levou ao pódio em 3 competições este ano. Recomendo para iniciantes e avançados!',
+      rating: 5,
+      image: '🥇'
     }
   ];
 
@@ -505,22 +538,66 @@ const Index = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mt-12 text-center"
+            className="mt-16 space-y-12"
           >
-            <div className="flex items-center justify-center gap-6 flex-wrap text-sm text-gray-400">
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-green-500" />
-                <span>Pagamento 100% Seguro</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-                <span>Garantia de Satisfação</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-green-500" />
-                <span>Acesso Imediato</span>
-              </div>
+            {/* Garantias e Benefícios */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="bg-neutral-900 border-green-500/20">
+                <CardContent className="pt-6 text-center">
+                  <Shield className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h3 className="font-bold text-white mb-2">Garantia de 7 Dias</h3>
+                  <p className="text-sm text-gray-400">
+                    Não satisfeito? Devolvemos 100% do seu investimento sem perguntas
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-neutral-900 border-green-500/20">
+                <CardContent className="pt-6 text-center">
+                  <Zap className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h3 className="font-bold text-white mb-2">Acesso Instantâneo</h3>
+                  <p className="text-sm text-gray-400">
+                    Comece imediatamente após a confirmação do pagamento
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-neutral-900 border-green-500/20">
+                <CardContent className="pt-6 text-center">
+                  <Lock className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h3 className="font-bold text-white mb-2">Pagamento Seguro</h3>
+                  <p className="text-sm text-gray-400">
+                    Criptografia SSL e certificação PCI - seus dados protegidos
+                  </p>
+                </CardContent>
+              </Card>
             </div>
+
+            {/* Urgência */}
+            <Card className="bg-gradient-to-r from-green-600 to-green-500 border-0">
+              <CardContent className="py-8 text-center">
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  🎁 Oferta Especial: Primeiros 100 Assinantes
+                </h3>
+                <p className="text-white/90 mb-4">
+                  Ganhe acesso VITALÍCIO à comunidade VIP + Consultoria mensal gratuita
+                </p>
+                <div className="flex items-center justify-center gap-4 text-sm text-white/80">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span>Cancele quando quiser</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span>Sem taxas ocultas</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span>Suporte 24/7</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>

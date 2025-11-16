@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_chat_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       authorized_devices: {
         Row: {
           browser: string | null
@@ -201,6 +225,7 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          user_display_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -208,6 +233,7 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          user_display_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -215,6 +241,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          user_display_id?: string | null
         }
         Relationships: []
       }
@@ -502,6 +529,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_user_display_id: { Args: never; Returns: string }
       has_active_subscription: { Args: { user_id: string }; Returns: boolean }
       has_role: {
         Args: {
