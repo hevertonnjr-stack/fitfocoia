@@ -13,17 +13,9 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signOut, isAdmin, loading: authLoading } = useAuth();
+  const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Redireciona imediatamente se já for admin
-    if (!authLoading && isAdmin) {
-      console.log('Redirecionando admin para /admin');
-      navigate('/admin', { replace: true });
-    }
-  }, [isAdmin, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,11 +43,14 @@ const AdminLogin = () => {
         });
         setLoading(false);
       } else {
-        console.log('Login bem-sucedido, aguardando redirect...');
         toast({
           title: "Login bem-sucedido",
           description: "Redirecionando para o painel...",
         });
+        // Redireciona após login bem-sucedido
+        setTimeout(() => {
+          navigate('/admin', { replace: true });
+        }, 500);
       }
     } catch (error) {
       toast({
