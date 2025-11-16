@@ -159,15 +159,11 @@ export default function Workouts() {
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-muted-foreground">Instruções:</p>
                   <ul className="text-sm space-y-1">
-                    {workout.instructions.slice(0, 3).map((instruction, idx) => (
+                    {workout.instructions.map((instruction, idx) => (
                       <li key={idx} className="text-muted-foreground">• {instruction}</li>
                     ))}
                   </ul>
                 </div>
-
-                <Button className="w-full">
-                  Iniciar Treino
-                </Button>
               </CardContent>
             </Card>
           );

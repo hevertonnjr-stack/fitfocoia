@@ -11,7 +11,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Workouts from "./pages/Workouts";
 import Progress from "./pages/Progress";
-import Exercises from "./pages/Exercises";
+import FoodScanner from "./pages/FoodScanner";
 import Community from "./pages/Community";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
@@ -37,7 +37,7 @@ const AppContent = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/treinos" element={<Workouts />} />
         <Route path="/progresso" element={<Progress />} />
-        <Route path="/exercicios" element={<Exercises />} />
+        <Route path="/scanner" element={<FoodScanner />} />
         <Route path="/comunidade" element={<Community />} />
       </Route>
       <Route path="*" element={<NotFound />} />
