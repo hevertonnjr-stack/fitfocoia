@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { Layout } from "./components/Layout";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import { SubscriptionNotifications } from "./components/SubscriptionNotifications";
 import { useSetupAdmin } from "./hooks/useSetupAdmin";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -51,6 +52,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <SubscriptionNotifications />
         <BrowserRouter>
           <AppContent />
         </BrowserRouter>
