@@ -13,7 +13,9 @@ interface Message {
   content: string;
 }
 
-export default function AISupport() {
+type AISupportProps = { offsetClass?: string };
+
+export default function AISupport({ offsetClass = "bottom-6 right-6" }: AISupportProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -130,7 +132,7 @@ export default function AISupport() {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className={`fixed ${offsetClass} z-50`}
           >
             <Button
               onClick={() => setIsOpen(true)}
@@ -150,7 +152,7 @@ export default function AISupport() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-3rem)]"
+            className={`fixed ${offsetClass} z-50 w-[400px] max-w-[calc(100vw-3rem)]`}
           >
             <Card className="border-2 border-primary/20 shadow-2xl">
               <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-white">

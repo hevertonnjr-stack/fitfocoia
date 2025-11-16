@@ -41,8 +41,26 @@ export default function Profile() {
       if (error) throw error;
 
       if (data) {
-        setProfile(data);
-        setAvatarUrl(data.avatar_url || "");
+        let updated = data;
+        if (!data.user_display_id) {
+          // Gera e salva um ID de exibição caso ainda não exista
+          const { data: genId, error: genErr } = await (supabase as any).rpc('generate_user_display_id');
+          if (!genErr && genId) {
+            const { data: updatedProfile, error: updErr } = await supabase
+              .from("profiles")
+              .update({ user_display_id: genId as string })
+              .eq("id", user.id)
+              .select()
+              .single();
+            if (!updErr && updatedProfile) {
+              updated = updatedProfile;
+            }
+          } else {
+            console.warn("Falha ao gerar user_display_id:", genErr);
+          }
+        }
+        setProfile(updated);
+        setAvatarUrl(updated.avatar_url || "");
       }
     } catch (error: any) {
       console.error("Error loading profile:", error);
@@ -325,7 +343,7 @@ export default function Profile() {
               Converse com nossa IA treinada para te ajudar com treinos, nutrição e dúvidas sobre o FitFoco.
             </p>
             <div className="mt-4">
-              <AISupport />
+              <AISupport offsetClass="bottom-24 right-4 md:bottom-6 md:right-6" />
             </div>
           </CardContent>
         </Card>
