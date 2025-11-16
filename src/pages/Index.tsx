@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRef, useState, useEffect } from 'react';
+import PricingSectionEnhanced from '@/components/ui/pricing-section-enhanced';
 
 const Index = () => {
   const { isAdmin } = useAuth();
@@ -46,56 +47,6 @@ const Index = () => {
       toast.error('Erro ao processar pagamento. Tente novamente.');
     }
   };
-
-  const plans = [
-    {
-      name: 'Plano Mensal',
-      price: 'R$ 24,90',
-      period: '/mês',
-      planType: 'mensal' as const,
-      features: [
-        'Acesso completo ao app',
-        'Todos os treinos',
-        'Acompanhamento de progresso',
-        'Suporte prioritário',
-        'Renovação automática'
-      ]
-    },
-    {
-      name: 'Plano Trimestral',
-      price: 'R$ 57,90',
-      originalPrice: 'R$ 89,70',
-      period: '/3 meses',
-      popular: true,
-      discount: '35% OFF',
-      planType: 'trimestral' as const,
-      features: [
-        'Acesso completo ao app',
-        'Todos os treinos',
-        'Acompanhamento de progresso',
-        'Suporte prioritário',
-        'Economia de 35%',
-        '🔥 Melhor custo-benefício'
-      ]
-    },
-    {
-      name: 'Plano Anual',
-      price: 'R$ 99,90',
-      originalPrice: 'R$ 298,80',
-      period: '/ano',
-      discount: '66% OFF',
-      planType: 'anual' as const,
-      features: [
-        'Acesso completo ao app',
-        'Todos os treinos',
-        'Acompanhamento de progresso',
-        'Suporte prioritário',
-        'Economia de 66%',
-        '💎 Máxima economia',
-        'Pagamento único'
-      ]
-    }
-  ];
 
   const stats = [
     { value: 10000, label: 'Alunos Ativos', suffix: '+', icon: Users },
@@ -466,111 +417,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="planos" className="py-24 bg-background">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-black mb-4">
-              Escolha Seu <span className="text-primary">Plano Ideal</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Investimento acessível para resultados transformadores
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {plans.map((plan, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -10 }}
-              >
-                <Card className={`relative h-full ${plan.popular ? 'border-primary border-2 shadow-2xl shadow-primary/20' : 'border-2'}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">
-                        MAIS POPULAR
-                      </span>
-                    </div>
-                  )}
-                  {plan.discount && (
-                    <div className="absolute -top-4 right-4">
-                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        {plan.discount}
-                      </span>
-                    </div>
-                  )}
-                  <CardHeader className="text-center pb-8">
-                    <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
-                    <div className="space-y-2">
-                      {plan.originalPrice && (
-                        <div className="text-muted-foreground line-through text-lg">
-                          {plan.originalPrice}
-                        </div>
-                      )}
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-5xl font-black">{plan.price}</span>
-                        <span className="text-muted-foreground">{plan.period}</span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <ul className="space-y-3">
-                      {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button 
-                      className="w-full"
-                      size="lg"
-                      variant={plan.popular ? "default" : "outline"}
-                      onClick={() => handlePlanClick(plan.planType)}
-                    >
-                      Começar Agora
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="mt-12 text-center"
-          >
-            <div className="flex items-center justify-center gap-6 flex-wrap text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-green-500" />
-                <span>Pagamento 100% Seguro</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-                <span>Garantia de Satisfação</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-green-500" />
-                <span>Acesso Imediato</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+      {/* Pricing Section - Enhanced with Visual Effects */}
+      <section id="planos">
+        <PricingSectionEnhanced onPlanClick={handlePlanClick} />
       </section>
+
 
       {/* FAQ Section */}
       <section className="py-24 bg-muted/30">
