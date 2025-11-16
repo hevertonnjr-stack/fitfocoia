@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,10 +23,24 @@ const ClientLogin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  if (user) {
-    navigate('/dashboard');
-    return null;
-  }
+  // Se já estiver logado, verifica se possui assinatura ativa antes de liberar acesso
+  useEffect(() => {
+    const verifyIfLoggedHasAccess = async () => {
+      if (!user) return;
+      try {
+        const has = await (supabase as any).rpc('has_active_subscription', { user_id: user.id });
+        const hasActive = has?.data === true;
+        if (hasActive) {
+          navigate('/dashboard');
+        } else {
+          await signOut();
+        }
+      } catch (e) {
+        await signOut();
+      }
+    };
+    verifyIfLoggedHasAccess();
+  }, [user, navigate, signOut]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
