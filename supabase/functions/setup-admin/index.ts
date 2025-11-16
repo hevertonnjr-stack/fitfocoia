@@ -25,14 +25,17 @@ serve(async (req) => {
 
     const adminEmail = 'thaylanfreitas@gmail.com';
     const adminPassword = '12345';
-    const clientEmail = 'Thaylanfreitas@gmail.com';
+    const clientEmail = 'thaylanfreitas@gmail.com';
     const clientPassword = 'th123';
 
-    // List users once to check existence
-    const { data: usersList1 } = await supabaseAdmin.auth.admin.listUsers();
+    // List all users to check existence (emails are case-insensitive)
+    const { data: usersList } = await supabaseAdmin.auth.admin.listUsers();
+    
+    const adminUser = usersList?.users.find(u => u.email?.toLowerCase() === adminEmail.toLowerCase()) ?? null;
+    const clientUser = usersList?.users.find(u => u.email?.toLowerCase() === clientEmail.toLowerCase()) ?? null;
 
-    // Ensure Admin user exists
-    let adminUser = usersList1?.users.find(u => u.email === adminEmail) ?? null;
+    // Only create admin if doesn't exist
+    let finalAdminUser = adminUser;
     if (!adminUser) {
       const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
         email: adminEmail,
@@ -46,27 +49,11 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      adminUser = userData.user;
+      finalAdminUser = userData.user;
     }
 
-    // Ensure Admin role
-    const { error: adminRoleError } = await supabaseAdmin
-      .from('user_roles')
-      .upsert({ user_id: adminUser!.id, role: 'admin' }, { onConflict: 'user_id,role' });
-
-    if (adminRoleError) {
-      console.error('Error ensuring admin role:', adminRoleError);
-      return new Response(
-        JSON.stringify({ error: 'Erro ao garantir role admin' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Ensure Client user exists
-    // Refresh list to avoid pagination issues
-    const { data: usersList2 } = await supabaseAdmin.auth.admin.listUsers();
-    let clientUser = usersList2?.users.find(u => u.email === clientEmail) ?? null;
-
+    // Only create client if doesn't exist
+    let finalClientUser = clientUser;
     if (!clientUser) {
       const { data: clientData, error: clientError } = await supabaseAdmin.auth.admin.createUser({
         email: clientEmail,
@@ -80,30 +67,45 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      clientUser = clientData.user;
+      finalClientUser = clientData.user;
     }
 
-    // Ensure Client role
-    const { error: clientRoleError } = await supabaseAdmin
-      .from('user_roles')
-      .upsert({ user_id: clientUser!.id, role: 'cliente' }, { onConflict: 'user_id,role' });
+    // Ensure admin role exists
+    if (finalAdminUser) {
+      const { error: adminRoleError } = await supabaseAdmin
+        .from('user_roles')
+        .upsert({ user_id: finalAdminUser.id, role: 'admin' }, { onConflict: 'user_id,role' });
 
-    if (clientRoleError) {
-      console.error('Error ensuring client role:', clientRoleError);
-      return new Response(
-        JSON.stringify({ error: 'Erro ao garantir role cliente' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      if (adminRoleError && adminRoleError.code !== '23505') {
+        console.error('Error ensuring admin role:', adminRoleError);
+      }
     }
 
-    console.log('Users ensured successfully');
+    // Ensure client role exists
+    if (finalClientUser) {
+      const { error: clientRoleError } = await supabaseAdmin
+        .from('user_roles')
+        .upsert({ user_id: finalClientUser.id, role: 'cliente' }, { onConflict: 'user_id,role' });
+
+      if (clientRoleError && clientRoleError.code !== '23505') {
+        console.error('Error ensuring client role:', clientRoleError);
+      }
+    }
+
+    console.log('Setup completed successfully');
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Admin e Cliente prontos',
-        admin: { email: adminEmail },
-        client: { email: clientEmail }
+        message: 'Usuários configurados com sucesso',
+        admin: { 
+          email: adminEmail, 
+          status: adminUser ? 'já_existe' : 'criado' 
+        },
+        client: { 
+          email: clientEmail, 
+          status: clientUser ? 'já_existe' : 'criado' 
+        }
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
