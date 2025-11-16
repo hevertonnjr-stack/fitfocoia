@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { User, Lock, Upload, Save, Mail } from "lucide-react";
+import { User, Lock, Upload, Save, Mail, IdCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AISupport from "@/components/AISupport";
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -22,12 +23,10 @@ export default function Profile() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    if (!user) {
-      navigate("/client-login");
-      return;
+    if (user) {
+      loadProfile();
     }
-    loadProfile();
-  }, [user, navigate]);
+  }, [user]);
 
   const loadProfile = async () => {
     if (!user) return;
@@ -143,7 +142,11 @@ export default function Profile() {
   };
 
   if (!user) {
-    return null;
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        <p className="text-muted-foreground">Carregando perfil...</p>
+      </div>
+    );
   }
 
   return (
@@ -212,15 +215,18 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {profile?.user_display_id && (
-                  <div>
-                    <Label>ID de Usuário</Label>
-                    <div className="px-4 py-2 bg-muted rounded-lg border">
-                      <p className="font-mono font-bold text-primary">{profile.user_display_id}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Seu ID único no FitFoco</p>
-                    </div>
+                <div>
+                  <Label htmlFor="userId" className="flex items-center gap-2">
+                    <IdCard className="w-4 h-4" />
+                    ID de Usuário
+                  </Label>
+                  <div className="px-4 py-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <p className="font-mono font-bold text-primary text-lg">
+                      {profile?.user_display_id || "Carregando..."}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Seu ID único no FitFoco</p>
                   </div>
-                )}
+                </div>
 
                 <Button onClick={handleUpdateProfile} disabled={loading} className="w-full md:w-auto">
                   <Save className="w-4 h-4 mr-2" />
@@ -296,6 +302,19 @@ export default function Profile() {
                 Sair da Conta
               </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Suporte AI */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Suporte Inteligente 24/7</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Converse com nossa IA treinada para te ajudar com treinos, nutrição e dúvidas sobre o FitFoco.
+            </p>
+            <AISupport />
           </CardContent>
         </Card>
       </div>
