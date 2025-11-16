@@ -18,11 +18,11 @@ export function useAuth() {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id);
-          }, 0);
+          // Chama imediatamente, sem setTimeout
+          checkAdminRole(session.user.id);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
       }
     );
@@ -34,8 +34,9 @@ export function useAuth() {
       
       if (session?.user) {
         checkAdminRole(session.user.id);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();

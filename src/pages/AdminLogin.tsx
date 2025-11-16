@@ -13,33 +13,41 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, isAdmin, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Redireciona se já estiver logado como admin
+  useEffect(() => {
+    if (!authLoading && isAdmin) {
+      console.log('Já está logado como admin, redirecionando...');
+      navigate('/admin', { replace: true });
+    }
+  }, [isAdmin, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      console.log('1. Iniciando processo de login...');
+      console.log('1. Iniciando login...');
       
-      // Primeiro tenta configurar o admin (se ainda não existir)
+      // Setup admin
       try {
-        console.log('2. Chamando setup-admin...');
-        const setupResult = await supabase.functions.invoke('setup-admin', { method: 'POST' });
-        console.log('3. Setup admin resultado:', setupResult);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await supabase.functions.invoke('setup-admin', { method: 'POST' });
       } catch (setupError) {
-        console.log('Setup admin error (pode ser normal):', setupError);
+        console.log('Setup admin:', setupError);
       }
 
-      // Faz o login
-      console.log('4. Tentando fazer login com:', email);
+      // Aguarda setup completar
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Faz login
+      console.log('2. Fazendo login...');
       const { error } = await signIn(email, password);
 
       if (error) {
-        console.error('5. Erro no login:', error);
+        console.error('Erro no login:', error);
         toast({
           title: "Erro no login",
           description: error.message || "Credenciais inválidas",
@@ -49,60 +57,21 @@ const AdminLogin = () => {
         return;
       }
 
-      // Login bem-sucedido
-      console.log('6. Login bem-sucedido! Verificando role...');
+      console.log('3. Login bem-sucedido! Aguardando verificação de role...');
+      
       toast({
         title: "Login bem-sucedido!",
         description: "Verificando permissões...",
       });
 
-      // Aguarda um pouco para garantir que a role foi verificada
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Verifica se o usuário tem role de admin
-      const { data: { user } } = await supabase.auth.getUser();
-      console.log('7. Usuário atual:', user?.id);
+      // Aguarda a verificação de role (o useAuth já vai fazer isso automaticamente)
+      // O useEffect vai redirecionar quando isAdmin mudar para true
       
-      if (user) {
-        const { data: roleData, error: roleError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-
-        console.log('8. Role data:', { roleData, roleError });
-
-        if (roleData) {
-          // Sucesso! Redireciona para o admin
-          console.log('9. Role de admin confirmada! Redirecionando...');
-          toast({
-            title: "Acesso autorizado!",
-            description: "Entrando no painel administrativo...",
-          });
-          
-          setTimeout(() => {
-            navigate('/admin', { replace: true });
-          }, 500);
-        } else {
-          console.error('10. Usuário não tem role de admin!');
-          toast({
-            title: "Acesso negado",
-            description: "Usuário não possui privilégios de administrador",
-            variant: "destructive",
-          });
-          await supabase.auth.signOut();
-          setLoading(false);
-        }
-      } else {
-        console.error('11. Nenhum usuário encontrado após login!');
-        setLoading(false);
-      }
     } catch (error) {
-      console.error('12. Erro no processo de login:', error);
+      console.error('Erro:', error);
       toast({
         title: "Erro",
-        description: "Erro ao fazer login. Tente novamente.",
+        description: "Erro ao fazer login",
         variant: "destructive",
       });
       setLoading(false);
