@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { Layout } from "./components/Layout";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
@@ -23,26 +23,40 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const ConditionalNotifications = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  
+  if (isAdminRoute) {
+    return null;
+  }
+  
+  return <SubscriptionNotifications />;
+};
+
 const AppContent = () => {
   useSetupAdmin();
   
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/admin-login" element={<AdminLogin />} />
-      <Route path="/client-login" element={<ClientLogin />} />
-      <Route path="/checkout" element={<Checkout />} />
-      {/* Admin fora do Layout para ser um painel separado */}
-      <Route path="/admin" element={<ProtectedAdminRoute><Admin /></ProtectedAdminRoute>} />
-      <Route element={<Layout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/treinos" element={<Workouts />} />
-        <Route path="/progresso" element={<Progress />} />
-        <Route path="/scanner" element={<FoodScanner />} />
-        <Route path="/comunidade" element={<Community />} />
-      </Route>
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <ConditionalNotifications />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/client-login" element={<ClientLogin />} />
+        <Route path="/checkout" element={<Checkout />} />
+        {/* Admin fora do Layout para ser um painel separado */}
+        <Route path="/admin" element={<ProtectedAdminRoute><Admin /></ProtectedAdminRoute>} />
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/treinos" element={<Workouts />} />
+          <Route path="/progresso" element={<Progress />} />
+          <Route path="/scanner" element={<FoodScanner />} />
+          <Route path="/comunidade" element={<Community />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 };
 
@@ -52,7 +66,6 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <SubscriptionNotifications />
         <BrowserRouter>
           <AppContent />
         </BrowserRouter>
