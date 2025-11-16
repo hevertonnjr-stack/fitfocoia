@@ -65,6 +65,60 @@ export type Database = {
         }
         Relationships: []
       }
+      completed_workouts: {
+        Row: {
+          calories_burned: number
+          completed_at: string | null
+          created_at: string | null
+          duration_minutes: number
+          id: string
+          user_id: string
+          workout_name: string
+        }
+        Insert: {
+          calories_burned: number
+          completed_at?: string | null
+          created_at?: string | null
+          duration_minutes: number
+          id?: string
+          user_id: string
+          workout_name: string
+        }
+        Update: {
+          calories_burned?: number
+          completed_at?: string | null
+          created_at?: string | null
+          duration_minutes?: number
+          id?: string
+          user_id?: string
+          workout_name?: string
+        }
+        Relationships: []
+      }
+      daily_calories: {
+        Row: {
+          calories: number
+          created_at: string | null
+          date: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ip_blacklist: {
         Row: {
           blocked_at: string | null
@@ -188,6 +242,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_name: string
+          achievement_type: string
+          created_at: string | null
+          description: string | null
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_name: string
+          achievement_type: string
+          created_at?: string | null
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_name?: string
+          achievement_type?: string
+          created_at?: string | null
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_activity_logs: {
         Row: {
           activity_type: string
@@ -215,6 +299,48 @@ export type Database = {
           metadata?: Json | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          active_minutes: number | null
+          calories_burned: number | null
+          created_at: string | null
+          id: string
+          steps: number | null
+          streak_days: number | null
+          total_workouts: number | null
+          updated_at: string | null
+          user_id: string
+          weight: number | null
+          weight_lost: number | null
+        }
+        Insert: {
+          active_minutes?: number | null
+          calories_burned?: number | null
+          created_at?: string | null
+          id?: string
+          steps?: number | null
+          streak_days?: number | null
+          total_workouts?: number | null
+          updated_at?: string | null
+          user_id: string
+          weight?: number | null
+          weight_lost?: number | null
+        }
+        Update: {
+          active_minutes?: number | null
+          calories_burned?: number | null
+          created_at?: string | null
+          id?: string
+          steps?: number | null
+          streak_days?: number | null
+          total_workouts?: number | null
+          updated_at?: string | null
+          user_id?: string
+          weight?: number | null
+          weight_lost?: number | null
         }
         Relationships: []
       }
@@ -266,6 +392,30 @@ export type Database = {
           is_online?: boolean | null
           last_seen?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      weight_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          recorded_at: string | null
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          recorded_at?: string | null
+          user_id: string
+          weight: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          recorded_at?: string | null
+          user_id?: string
+          weight?: number
         }
         Relationships: []
       }
