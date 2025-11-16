@@ -30,6 +30,8 @@ const AppContent = () => {
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/client-login" element={<ClientLogin />} />
       <Route path="/checkout" element={<Checkout />} />
+      {/* Admin fora do Layout para ser um painel separado */}
+      <Route path="/admin" element={<Admin />} />
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/treinos" element={<Workouts />} />
@@ -37,7 +39,6 @@ const AppContent = () => {
         <Route path="/exercicios" element={<Exercises />} />
         <Route path="/comunidade" element={<Community />} />
         <Route path="/premium" element={<Premium />} />
-        <Route path="/admin" element={<Admin />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
