@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import CreateClientWithSubscription from '@/components/CreateClientWithSubscription';
-import ManualClientApproval from '@/components/ManualClientApproval';
 import CreateAdminUser from '@/components/CreateAdminUser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -257,7 +256,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
@@ -361,7 +360,6 @@ const Admin = () => {
             <div className="grid gap-6">
               <CreateAdminUser />
               <CreateClientWithSubscription />
-              <ManualClientApproval />
             </div>
           </TabsContent>
 
