@@ -119,6 +119,51 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_challenges: {
+        Row: {
+          challenge_date: string
+          challenge_description: string
+          challenge_name: string
+          challenge_type: string
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          current_value: number | null
+          id: string
+          reward_points: number | null
+          target_value: number
+          user_id: string
+        }
+        Insert: {
+          challenge_date?: string
+          challenge_description: string
+          challenge_name: string
+          challenge_type: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          reward_points?: number | null
+          target_value: number
+          user_id: string
+        }
+        Update: {
+          challenge_date?: string
+          challenge_description?: string
+          challenge_name?: string
+          challenge_type?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          reward_points?: number | null
+          target_value?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       ip_blacklist: {
         Row: {
           blocked_at: string | null
@@ -151,18 +196,24 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           email: string
+          full_name: string | null
           id: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           email: string
+          full_name?: string | null
           id: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           email?: string
+          full_name?: string | null
           id?: string
         }
         Relationships: []
@@ -299,6 +350,33 @@ export type Database = {
           metadata?: Json | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_points: {
+        Row: {
+          created_at: string | null
+          id: string
+          level: number | null
+          total_points: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
