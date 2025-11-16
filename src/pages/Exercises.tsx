@@ -13,6 +13,15 @@ const exercises = [
     duration: "30 seg",
     calories: "15 kcal",
     target: "Full Body",
+    instructions: [
+      "1. Fique em pé com os pés na largura dos ombros",
+      "2. Agache e coloque as mãos no chão",
+      "3. Jogue os pés para trás em posição de prancha",
+      "4. Faça uma flexão (opcional para iniciantes)",
+      "5. Pule os pés de volta para perto das mãos",
+      "6. Salte explosivamente para cima com os braços estendidos",
+      "7. Repita o movimento de forma contínua"
+    ]
   },
   {
     id: 2,
@@ -22,6 +31,15 @@ const exercises = [
     duration: "45 seg",
     calories: "12 kcal",
     target: "Core & Cardio",
+    instructions: [
+      "1. Comece em posição de prancha alta",
+      "2. Mantenha o core ativado e costas retas",
+      "3. Traga o joelho direito em direção ao peito",
+      "4. Retorne à posição inicial rapidamente",
+      "5. Alterne com a perna esquerda",
+      "6. Continue alternando em ritmo acelerado",
+      "7. Mantenha os quadris nivelados durante todo movimento"
+    ]
   },
   {
     id: 3,
@@ -31,6 +49,15 @@ const exercises = [
     duration: "30 seg",
     calories: "10 kcal",
     target: "Pernas & Glúteos",
+    instructions: [
+      "1. Fique em pé com pés na largura dos ombros",
+      "2. Desça em um agachamento profundo",
+      "3. Mantenha o peso nos calcanhares",
+      "4. Empurre explosivamente pelos pés e salte",
+      "5. Estenda completamente o corpo no ar",
+      "6. Aterrisse suavemente absorvendo o impacto",
+      "7. Desça imediatamente para o próximo agachamento"
+    ]
   },
   {
     id: 4,
@@ -40,6 +67,15 @@ const exercises = [
     duration: "60 seg",
     calories: "8 kcal",
     target: "Abdômen",
+    instructions: [
+      "1. Comece em posição de prancha sobre os antebraços",
+      "2. Cotovelos alinhados sob os ombros",
+      "3. Corpo formando uma linha reta da cabeça aos pés",
+      "4. Ative o core contraindo o abdômen",
+      "5. Mantenha o pescoço neutro olhando para baixo",
+      "6. Respire de forma controlada",
+      "7. Mantenha a posição sem deixar os quadris caírem"
+    ]
   },
   {
     id: 5,
@@ -49,6 +85,15 @@ const exercises = [
     duration: "30 seg",
     calories: "10 kcal",
     target: "Cardio & Pernas",
+    instructions: [
+      "1. Fique em pé com postura ereta",
+      "2. Comece correndo no lugar",
+      "3. Eleve os joelhos até a altura do quadril",
+      "4. Alterne as pernas rapidamente",
+      "5. Balance os braços naturalmente",
+      "6. Mantenha o tronco ereto e core ativo",
+      "7. Aterrisse suavemente na ponta dos pés"
+    ]
   },
   {
     id: 6,
@@ -58,6 +103,15 @@ const exercises = [
     duration: "45 seg",
     calories: "9 kcal",
     target: "Peito & Braços",
+    instructions: [
+      "1. Posicione-se em prancha alta com mãos afastadas",
+      "2. Mãos um pouco mais largas que os ombros",
+      "3. Desça o corpo dobrando os cotovelos",
+      "4. Mantenha cotovelos a 45° do corpo",
+      "5. Desça até o peito quase tocar o chão",
+      "6. Empurre para cima até extensão completa",
+      "7. Mantenha o corpo reto durante todo movimento"
+    ]
   },
   {
     id: 7,
@@ -67,6 +121,15 @@ const exercises = [
     duration: "60 seg",
     calories: "11 kcal",
     target: "Full Body",
+    instructions: [
+      "1. Fique em pé com pés juntos e braços ao lado",
+      "2. Salte abrindo as pernas lateralmente",
+      "3. Simultaneamente levante os braços acima da cabeça",
+      "4. Bata palmas no topo (opcional)",
+      "5. Salte novamente fechando pernas e baixando braços",
+      "6. Retorne à posição inicial",
+      "7. Repita em ritmo constante e controlado"
+    ]
   },
   {
     id: 8,
@@ -76,6 +139,15 @@ const exercises = [
     duration: "45 seg",
     calories: "8 kcal",
     target: "Pernas",
+    instructions: [
+      "1. Fique em pé com pés na largura dos quadris",
+      "2. Dê um passo largo para frente com uma perna",
+      "3. Desça o corpo dobrando ambos joelhos em 90°",
+      "4. Joelho de trás quase toca o chão",
+      "5. Joelho da frente não ultrapassa os dedos do pé",
+      "6. Empurre pelo calcanhar da frente para voltar",
+      "7. Alterne as pernas ou complete todas de um lado"
+    ]
   },
 ];
 

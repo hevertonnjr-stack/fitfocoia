@@ -46,7 +46,7 @@ export default function Dashboard() {
                 <Flame className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">420</p>
+                <p className="text-2xl font-bold">0</p>
                 <p className="text-xs text-muted-foreground">kcal hoje</p>
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function Dashboard() {
                 <Footprints className="w-5 h-5 text-foreground" />
               </div>
               <div>
-                <p className="text-2xl font-bold">8,542</p>
+                <p className="text-2xl font-bold">0</p>
                 <p className="text-xs text-muted-foreground">passos</p>
               </div>
             </div>
@@ -74,7 +74,7 @@ export default function Dashboard() {
                 <Clock className="w-5 h-5 text-foreground" />
               </div>
               <div>
-                <p className="text-2xl font-bold">45</p>
+                <p className="text-2xl font-bold">0</p>
                 <p className="text-xs text-muted-foreground">min ativos</p>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function Dashboard() {
                 <Trophy className="w-5 h-5 text-foreground" />
               </div>
               <div>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">0</p>
                 <p className="text-xs text-muted-foreground">sequência</p>
               </div>
             </div>
