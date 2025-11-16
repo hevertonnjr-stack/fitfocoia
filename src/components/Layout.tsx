@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button";
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
 
 const navItems = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Treinos", url: "/treinos", icon: Dumbbell },
   { title: "Progresso", url: "/progresso", icon: TrendingUp },
   { title: "Exercícios", url: "/exercicios", icon: BookOpen },
   { title: "Comunidade", url: "/comunidade", icon: Users },
-  { title: "Premium", url: "/premium", icon: Crown },
 ];
 
 export function Layout() {
@@ -56,14 +55,7 @@ export function Layout() {
               </nav>
               
               <div className="flex items-center gap-2">
-                {user && (
-                  <span className="text-sm text-muted-foreground hidden lg:inline">
-                    {user.email}
-                  </span>
-                )}
-                <div className="scale-75 origin-center">
-                  <CinematicThemeSwitcher />
-                </div>
+                <CinematicThemeSwitcher />
                 {user && (
                   <Button
                     variant="ghost"

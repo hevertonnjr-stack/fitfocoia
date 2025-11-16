@@ -39,7 +39,6 @@ const AppContent = () => {
         <Route path="/progresso" element={<Progress />} />
         <Route path="/exercicios" element={<Exercises />} />
         <Route path="/comunidade" element={<Community />} />
-        <Route path="/premium" element={<Premium />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

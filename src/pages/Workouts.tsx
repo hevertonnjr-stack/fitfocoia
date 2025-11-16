@@ -1,69 +1,120 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, Flame, Zap, Heart, Target, TrendingUp } from "lucide-react";
+import { Dumbbell, Clock, Flame, TrendingUp, Target, BookOpen } from "lucide-react";
 
 const workouts = [
   {
     id: 1,
     title: "HIIT Queima Gordura",
-    duration: "30 min",
-    calories: "400 kcal",
+    duration: "20 min",
+    calories: 250,
     level: "Intermediário",
-    category: "HIIT",
+    category: "Cardio",
     exercises: 8,
-    icon: Zap,
+    icon: Flame,
+    instructions: [
+      "Aqueça por 3 minutos com polichinelos leves",
+      "30 segundos de burpees em alta intensidade",
+      "15 segundos de descanso",
+      "30 segundos de mountain climbers",
+      "15 segundos de descanso",
+      "Repita o circuito 4 vezes",
+      "Finalize com alongamento de 3 minutos"
+    ]
   },
   {
     id: 2,
-    title: "Cardio Intenso",
-    duration: "45 min",
-    calories: "550 kcal",
+    title: "Força Total",
+    duration: "35 min",
+    calories: 180,
     level: "Avançado",
-    category: "Cardio",
-    exercises: 10,
-    icon: Heart,
+    category: "Força",
+    exercises: 12,
+    icon: Dumbbell,
+    instructions: [
+      "Aquecimento: 5 minutos de mobilidade articular",
+      "Flexões: 4 séries de 15 repetições",
+      "Agachamentos: 4 séries de 20 repetições",
+      "Prancha: 4 séries de 45 segundos",
+      "Descanso de 45 segundos entre séries",
+      "Finalize com alongamento completo"
+    ]
   },
   {
     id: 3,
-    title: "Core & Abs Definição",
-    duration: "20 min",
-    calories: "200 kcal",
+    title: "Core & Abdômen",
+    duration: "15 min",
+    calories: 120,
     level: "Iniciante",
-    category: "Abdômen",
+    category: "Core",
     exercises: 6,
     icon: Target,
+    instructions: [
+      "Prancha frontal: 3 séries de 30 segundos",
+      "Prancha lateral (cada lado): 2 séries de 20 segundos",
+      "Bicicleta no ar: 3 séries de 20 repetições",
+      "Elevação de pernas: 3 séries de 15 repetições",
+      "Descanso de 30 segundos entre exercícios"
+    ]
   },
   {
     id: 4,
-    title: "Full Body Queima",
-    duration: "35 min",
-    calories: "450 kcal",
+    title: "Pernas Explosivas",
+    duration: "30 min",
+    calories: 280,
     level: "Intermediário",
-    category: "Full Body",
-    exercises: 9,
+    category: "Pernas",
+    exercises: 10,
     icon: TrendingUp,
+    instructions: [
+      "Aquecimento com agachamento livre: 2 minutos",
+      "Agachamentos com salto: 4 séries de 12 repetições",
+      "Afundos alternados: 3 séries de 15 por perna",
+      "Stiff unilateral: 3 séries de 12 por perna",
+      "Panturrilha em pé: 4 séries de 20 repetições",
+      "Alongamento focado em posteriores: 5 minutos"
+    ]
   },
   {
     id: 5,
-    title: "Tabata Explosivo",
-    duration: "25 min",
-    calories: "380 kcal",
+    title: "Resistência",
+    duration: "40 min",
+    calories: 320,
     level: "Avançado",
-    category: "Tabata",
-    exercises: 8,
-    icon: Zap,
+    category: "Cardio",
+    exercises: 15,
+    icon: Clock,
+    instructions: [
+      "Aquecimento progressivo: 5 minutos",
+      "Corrida estacionária: 3 minutos em ritmo moderado",
+      "Burpees: 1 minuto intenso",
+      "Jump squats: 1 minuto",
+      "Mountain climbers: 1 minuto",
+      "Descanso: 1 minuto",
+      "Repita o circuito 5 vezes",
+      "Desaquecimento com caminhada: 5 minutos"
+    ]
   },
   {
     id: 6,
-    title: "Low Impact Fat Burn",
-    duration: "40 min",
-    calories: "320 kcal",
+    title: "Alongamento Completo",
+    duration: "20 min",
+    calories: 80,
     level: "Iniciante",
-    category: "Baixo Impacto",
-    exercises: 7,
-    icon: Heart,
-  },
+    category: "Flexibilidade",
+    exercises: 8,
+    icon: BookOpen,
+    instructions: [
+      "Respiração profunda: 2 minutos",
+      "Alongamento de pescoço e ombros: 3 minutos",
+      "Alongamento de braços e tronco: 4 minutos",
+      "Alongamento de quadril: 3 minutos",
+      "Alongamento de pernas (isquiotibiais): 4 minutos",
+      "Alongamento de panturrilhas: 2 minutos",
+      "Respiração final e relaxamento: 2 minutos"
+    ]
+  }
 ];
 
 export default function Workouts() {
@@ -71,56 +122,50 @@ export default function Workouts() {
     <div className="container mx-auto px-4 py-6 pb-24 md:pb-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Treinos</h1>
-        <p className="text-muted-foreground">Escolha seu próximo desafio</p>
+        <p className="text-muted-foreground">Escolha seu treino e comece agora</p>
       </div>
 
-      {/* Featured Workout */}
-      <Card className="mb-8 bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30">
-        <CardContent className="pt-6">
-          <Badge className="mb-3 bg-primary/20 text-primary border-primary/30">Recomendado</Badge>
-          <h2 className="text-2xl font-bold mb-2">Plano de 30 Dias</h2>
-          <p className="text-muted-foreground mb-4">
-            Transforme seu corpo com nosso programa completo gerado por IA
-          </p>
-          <Button size="lg" className="gap-2">
-            <Play className="w-4 h-4" />
-            Gerar Meu Plano
-          </Button>
-        </CardContent>
-      </Card>
-
       {/* Workouts Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {workouts.map((workout) => {
           const Icon = workout.icon;
           return (
-            <Card key={workout.id} className="hover:border-primary/50 transition-all hover:shadow-lg group">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                    <Icon className="w-6 h-6 text-primary" />
+            <Card key={workout.id} className="hover:border-primary/50 transition-all">
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Icon className="w-5 h-5 text-primary" />
                   </div>
                   <Badge variant="outline">{workout.level}</Badge>
                 </div>
-
-                <h3 className="text-lg font-bold mb-2">{workout.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{workout.category}</p>
-
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                <CardTitle>{workout.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-2 text-sm">
                   <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {workout.duration}
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span>{workout.duration}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Flame className="w-4 h-4" />
-                    {workout.calories}
+                    <Flame className="w-4 h-4 text-muted-foreground" />
+                    <span>{workout.calories}kcal</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Dumbbell className="w-4 h-4 text-muted-foreground" />
+                    <span>{workout.exercises} ex</span>
                   </div>
                 </div>
+                
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-muted-foreground">Instruções:</p>
+                  <ul className="text-sm space-y-1">
+                    {workout.instructions.slice(0, 3).map((instruction, idx) => (
+                      <li key={idx} className="text-muted-foreground">• {instruction}</li>
+                    ))}
+                  </ul>
+                </div>
 
-                <p className="text-sm text-muted-foreground mb-4">{workout.exercises} exercícios</p>
-
-                <Button className="w-full gap-2" variant="outline">
-                  <Play className="w-4 h-4" />
+                <Button className="w-full">
                   Iniciar Treino
                 </Button>
               </CardContent>
