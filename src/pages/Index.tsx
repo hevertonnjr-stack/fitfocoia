@@ -93,10 +93,18 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 py-16 max-w-7xl">
         <div className="flex justify-end mb-6">
-          <Button variant="secondary" asChild>
-            <Link to={isAdmin ? '/admin' : '/admin-login'}>
-              {isAdmin ? 'Ir para Painel Admin' : 'Acesso Administrativo'}
-            </Link>
+          <Button 
+            variant="secondary" 
+            onClick={() => {
+              console.log('Admin status:', isAdmin);
+              if (isAdmin) {
+                navigate('/admin');
+              } else {
+                navigate('/admin-login');
+              }
+            }}
+          >
+            {isAdmin ? 'Ir para Painel Admin' : 'Acesso Administrativo'}
           </Button>
         </div>
         {/* Hero Section */}

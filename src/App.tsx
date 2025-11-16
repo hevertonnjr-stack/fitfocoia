@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { Layout } from "./components/Layout";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import { useSetupAdmin } from "./hooks/useSetupAdmin";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -31,7 +32,7 @@ const AppContent = () => {
       <Route path="/client-login" element={<ClientLogin />} />
       <Route path="/checkout" element={<Checkout />} />
       {/* Admin fora do Layout para ser um painel separado */}
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin" element={<ProtectedAdminRoute><Admin /></ProtectedAdminRoute>} />
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/treinos" element={<Workouts />} />
