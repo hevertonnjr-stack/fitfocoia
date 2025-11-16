@@ -11,9 +11,15 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handlePlanClick = (paymentUrl: string) => {
-    window.open(paymentUrl, '_blank', 'noopener,noreferrer');
+    try {
+      const w = window.open(paymentUrl, '_blank'); // manter referer
+      if (!w) {
+        window.location.href = paymentUrl; // fallback caso popup seja bloqueado
+      }
+    } catch {
+      window.location.href = paymentUrl; // fallback seguro
+    }
   };
-
   const plans = [
     {
       name: 'Plano Mensal',
