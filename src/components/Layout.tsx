@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import CinematicThemeSwitcher from "@/components/ui/cinematic-theme-switcher";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { SubscriptionNotifications } from "@/components/SubscriptionNotifications";
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
 
 const navItems = [
@@ -19,6 +20,7 @@ export function Layout() {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <SubscriptionNotifications />
       {/* Header */}
       <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4">
