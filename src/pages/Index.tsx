@@ -19,21 +19,21 @@ const Index = () => {
         body: { plan_type: planType }
       });
 
-      if (error) {
-        console.error('Erro ao gerar link de pagamento:', error);
-        toast.error('Erro ao processar. Tente novamente.');
-        return;
+      let paymentUrl: string | undefined = data?.payment_url;
+      if (error || !paymentUrl) {
+        if (planType === 'mensal') {
+          paymentUrl = 'https://pay.risepay.com.br/Pay/63b5cd42ee0f49578a63ab025c05f64f';
+        } else {
+          console.error('Erro ao gerar link de pagamento:', error);
+          toast.error('Erro ao processar. Tente novamente.');
+          return;
+        }
       }
 
-      const paymentUrl = data.payment_url;
       console.log('Abrindo link de pagamento:', paymentUrl);
 
-      // Tentar abrir em nova aba primeiro
-      const w = window.open(paymentUrl, '_blank');
-      if (!w || w.closed) {
-        // Se bloqueado, abrir na mesma aba
-        window.location.href = paymentUrl;
-      }
+      // Redirecionar de forma confiável (evita bloqueio de pop-up)
+      window.location.assign(paymentUrl!);
     } catch (error) {
       console.error('Erro:', error);
       toast.error('Erro ao processar pagamento. Tente novamente.');
