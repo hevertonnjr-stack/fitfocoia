@@ -30,10 +30,9 @@ const names = [
 ];
 
 const plans = [
-  { name: 'Plano Mensal', price: '24,90' },
-  { name: 'Plano Trimestral', price: '59,90' },
-  { name: 'Plano Semestral', price: '99,90' },
-  { name: 'Plano Anual', price: '149,90' }
+  { name: 'Plano Mensal', price: '24,90', emoji: '⚡' },
+  { name: 'Plano Trimestral', price: '59,90', emoji: '🔥' },
+  { name: 'Plano Semestral', price: '99,90', emoji: '💪' }
 ];
 
 export function SubscriptionNotifications() {
@@ -42,10 +41,18 @@ export function SubscriptionNotifications() {
       const randomName = names[Math.floor(Math.random() * names.length)];
       const randomPlan = plans[Math.floor(Math.random() * plans.length)];
       
-      toast.success(`${randomName} acabou de assinar o ${randomPlan.name} de R$ ${randomPlan.price}! 🎉`, {
-        duration: 4000,
-        position: 'bottom-right',
-      });
+      toast.success(
+        `${randomPlan.emoji} ${randomName} acabou de assinar o ${randomPlan.name} de R$ ${randomPlan.price}!`, 
+        {
+          duration: 5000,
+          position: 'top-right',
+          className: 'bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-2xl border-2 border-green-400',
+          style: {
+            padding: '16px',
+            fontSize: '15px',
+          }
+        }
+      );
     };
 
     // Mostra primeira notificação após 2 segundos
