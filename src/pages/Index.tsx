@@ -1,25 +1,19 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, Dumbbell, Shield, ArrowRight, Zap, Users, Trophy, CheckCircle2, Target, TrendingUp, Award, Star, Calendar, Clock, Heart, Flame, BarChart3, Smartphone, Lock, MessageCircle } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useRef, useState, useEffect } from 'react';
-import PricingSectionEnhanced from '@/components/ui/pricing-section-enhanced';
+import { useRef, useState, useEffect, memo } from 'react';
 
 const Index = () => {
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll();
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
   const statsInView = useInView(statsRef, { once: true, margin: "-100px" });
   const featuresInView = useInView(featuresRef, { once: true, margin: "-100px" });
@@ -47,6 +41,56 @@ const Index = () => {
       toast.error('Erro ao processar pagamento. Tente novamente.');
     }
   };
+
+  const plans = [
+    {
+      name: 'Plano Mensal',
+      price: 'R$ 24,90',
+      period: '/mês',
+      planType: 'mensal' as const,
+      features: [
+        'Acesso completo ao app',
+        'Todos os treinos',
+        'Acompanhamento de progresso',
+        'Suporte prioritário',
+        'Renovação automática'
+      ]
+    },
+    {
+      name: 'Plano Trimestral',
+      price: 'R$ 57,90',
+      originalPrice: 'R$ 89,70',
+      period: '/3 meses',
+      popular: true,
+      discount: '35% OFF',
+      planType: 'trimestral' as const,
+      features: [
+        'Acesso completo ao app',
+        'Todos os treinos',
+        'Acompanhamento de progresso',
+        'Suporte prioritário',
+        'Economia de 35%',
+        '🔥 Melhor custo-benefício'
+      ]
+    },
+    {
+      name: 'Plano Anual',
+      price: 'R$ 99,90',
+      originalPrice: 'R$ 298,80',
+      period: '/ano',
+      discount: '66% OFF',
+      planType: 'anual' as const,
+      features: [
+        'Acesso completo ao app',
+        'Todos os treinos',
+        'Acompanhamento de progresso',
+        'Suporte prioritário',
+        'Economia de 66%',
+        '💎 Máxima economia',
+        'Pagamento único'
+      ]
+    }
+  ];
 
   const stats = [
     { value: 10000, label: 'Alunos Ativos', suffix: '+', icon: Users },
@@ -145,31 +189,6 @@ const Index = () => {
     }
   ];
 
-  const AnimatedCounter = ({ end, suffix = '', duration = 2000 }: { end: number; suffix?: string; duration?: number }) => {
-    const [count, setCount] = useState(0);
-
-    useEffect(() => {
-      if (!statsInView) return;
-
-      let startTime: number | null = null;
-      const animate = (timestamp: number) => {
-        if (!startTime) startTime = timestamp;
-        const progress = timestamp - startTime;
-        const percentage = Math.min(progress / duration, 1);
-        
-        setCount(Math.floor(end * percentage));
-
-        if (percentage < 1) {
-          requestAnimationFrame(animate);
-        }
-      };
-
-      requestAnimationFrame(animate);
-    }, [statsInView, end, duration]);
-
-    return <span>{count}{suffix}</span>;
-  };
-
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Navigation */}
@@ -202,63 +221,44 @@ const Index = () => {
         </div>
       </motion.nav>
 
-      {/* Hero Section - SUPER IMPACTANTE */}
-      <motion.section 
-        ref={heroRef}
-        style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative py-20 lg:py-32 overflow-hidden"
-      >
+      {/* Hero Section */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-700" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
         </div>
 
         <div className="container mx-auto px-4 max-w-7xl">
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             className="text-center space-y-8"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+              transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20"
             >
               <Flame className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium">Transforme seu corpo, transforme sua vida</span>
             </motion.div>
 
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight"
-            >
-              <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight">
+              <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
                 Conquiste o Corpo
               </span>
               <br />
               <span className="text-foreground">dos Seus Sonhos</span>
-            </motion.h1>
+            </h1>
 
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
-            >
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Junte-se a mais de <span className="font-bold text-primary">10.000 pessoas</span> que já transformaram suas vidas com treinos personalizados, acompanhamento profissional e uma comunidade que te apoia em cada passo.
-            </motion.p>
+            </p>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
                 className="text-lg px-8 py-6 h-auto group"
@@ -275,22 +275,17 @@ const Index = () => {
               >
                 Já sou membro
               </Button>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 0.8 }}
-              className="flex items-center justify-center gap-2 text-sm text-muted-foreground"
-            >
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
               <span>Sem fidelidade • Cancele quando quiser</span>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
               <span>Acesso imediato</span>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Stats Section */}
       <motion.section 
@@ -311,7 +306,7 @@ const Index = () => {
                   <stat.icon className="h-8 w-8 text-primary" />
                 </div>
                 <div className="text-4xl md:text-5xl font-black text-foreground mb-2">
-                  {statsInView && <AnimatedCounter end={stat.value} suffix={stat.suffix} />}
+                  {stat.value}{stat.suffix}
                 </div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </motion.div>
@@ -417,9 +412,117 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Pricing Section - Enhanced with Visual Effects */}
-      <section id="planos">
-        <PricingSectionEnhanced onPlanClick={handlePlanClick} />
+      {/* Pricing Section */}
+      <section id="planos" className="py-24 bg-black relative overflow-hidden">
+        {/* Background effects simplificado */}
+        <div className="absolute inset-0 bg-gradient-to-b from-green-950/20 to-black pointer-events-none" />
+        
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-white">
+              Escolha Seu <span className="text-green-500">Plano Ideal</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Investimento acessível para resultados transformadores
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {plans.map((plan, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.4 }}
+              >
+                <Card className={`relative h-full bg-neutral-900 border-neutral-800 text-white ${
+                  plan.popular ? 'ring-2 ring-green-500 shadow-2xl shadow-green-500/20' : ''
+                }`}>
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold">
+                        MAIS POPULAR
+                      </span>
+                    </div>
+                  )}
+                  {plan.discount && (
+                    <div className="absolute -top-4 right-4">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {plan.discount}
+                      </span>
+                    </div>
+                  )}
+                  <CardHeader className="text-center pb-8">
+                    <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
+                    <div className="space-y-2">
+                      {plan.originalPrice && (
+                        <div className="text-gray-400 line-through text-lg">
+                          {plan.originalPrice}
+                        </div>
+                      )}
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-5xl font-black text-green-400">{plan.price}</span>
+                        <span className="text-gray-400">{plan.period}</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-gray-300">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'bg-green-500 hover:bg-green-600 text-white' 
+                          : 'bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700'
+                      }`}
+                      size="lg"
+                      onClick={() => handlePlanClick(plan.planType)}
+                    >
+                      Começar Agora
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mt-12 text-center"
+          >
+            <div className="flex items-center justify-center gap-6 flex-wrap text-sm text-gray-400">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-green-500" />
+                <span>Pagamento 100% Seguro</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span>Garantia de Satisfação</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-green-500" />
+                <span>Acesso Imediato</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
 
