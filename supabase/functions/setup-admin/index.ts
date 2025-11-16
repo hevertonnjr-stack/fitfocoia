@@ -23,10 +23,10 @@ serve(async (req) => {
       }
     );
 
-    const adminEmail = 'thaylanfreitas@gmail.com';
-    const adminPassword = '12345';
-    const clientEmail = 'thaylanfreitas@gmail.com';
-    const clientPassword = 'th123';
+    const adminEmail = 'th@admin.com';
+    const adminPassword = 'th123admin';
+    const clientEmail = 'th@cliente.com';
+    const clientPassword = 'th123cliente';
 
     // List all users to check existence (emails are case-insensitive)
     const { data: usersList } = await supabaseAdmin.auth.admin.listUsers();
