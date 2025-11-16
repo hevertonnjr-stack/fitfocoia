@@ -22,40 +22,87 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
+      console.log('1. Iniciando processo de login...');
+      
       // Primeiro tenta configurar o admin (se ainda não existir)
       try {
-        await supabase.functions.invoke('setup-admin', { method: 'POST' });
+        console.log('2. Chamando setup-admin...');
+        const setupResult = await supabase.functions.invoke('setup-admin', { method: 'POST' });
+        console.log('3. Setup admin resultado:', setupResult);
+        await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (setupError) {
-        // Ignora erros de setup, pois o admin pode já existir
-        console.log('Setup admin result:', setupError);
+        console.log('Setup admin error (pode ser normal):', setupError);
       }
 
-      // Aguarda um pouco para garantir que o admin foi criado
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      // Faz o login
+      console.log('4. Tentando fazer login com:', email);
       const { error } = await signIn(email, password);
 
       if (error) {
+        console.error('5. Erro no login:', error);
         toast({
           title: "Erro no login",
-          description: "Credenciais de administrador inválidas",
+          description: error.message || "Credenciais inválidas",
           variant: "destructive",
         });
         setLoading(false);
+        return;
+      }
+
+      // Login bem-sucedido
+      console.log('6. Login bem-sucedido! Verificando role...');
+      toast({
+        title: "Login bem-sucedido!",
+        description: "Verificando permissões...",
+      });
+
+      // Aguarda um pouco para garantir que a role foi verificada
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Verifica se o usuário tem role de admin
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('7. Usuário atual:', user?.id);
+      
+      if (user) {
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        console.log('8. Role data:', { roleData, roleError });
+
+        if (roleData) {
+          // Sucesso! Redireciona para o admin
+          console.log('9. Role de admin confirmada! Redirecionando...');
+          toast({
+            title: "Acesso autorizado!",
+            description: "Entrando no painel administrativo...",
+          });
+          
+          setTimeout(() => {
+            navigate('/admin', { replace: true });
+          }, 500);
+        } else {
+          console.error('10. Usuário não tem role de admin!');
+          toast({
+            title: "Acesso negado",
+            description: "Usuário não possui privilégios de administrador",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+          setLoading(false);
+        }
       } else {
-        toast({
-          title: "Login bem-sucedido",
-          description: "Redirecionando para o painel...",
-        });
-        // Redireciona após login bem-sucedido
-        setTimeout(() => {
-          navigate('/admin', { replace: true });
-        }, 500);
+        console.error('11. Nenhum usuário encontrado após login!');
+        setLoading(false);
       }
     } catch (error) {
+      console.error('12. Erro no processo de login:', error);
       toast({
         title: "Erro",
-        description: "Erro ao fazer login",
+        description: "Erro ao fazer login. Tente novamente.",
         variant: "destructive",
       });
       setLoading(false);
