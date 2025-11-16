@@ -75,16 +75,6 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        navigate('/auth');
-      } else if (!isAdmin) {
-        navigate('/');
-      }
-    }
-  }, [user, isAdmin, authLoading, navigate]);
-
-  useEffect(() => {
     if (isAdmin) {
       loadData();
       setupRealtimeSubscriptions();
