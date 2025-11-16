@@ -83,7 +83,7 @@ export function useAuth() {
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
-    navigate('/auth');
+    navigate('/client-login');
   };
 
   return {
