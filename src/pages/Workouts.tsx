@@ -114,6 +114,124 @@ const workouts = [
       "Alongamento de panturrilhas: 2 minutos",
       "Respiração final e relaxamento: 2 minutos"
     ]
+  },
+  {
+    id: 7,
+    title: "Upper Body Strength",
+    duration: "35 min",
+    calories: 220,
+    level: "Intermediário",
+    category: "Força",
+    exercises: 10,
+    icon: Dumbbell,
+    instructions: [
+      "Aquecimento com rotação de ombros: 3 minutos",
+      "Flexões diamante: 3 séries de 12 repetições",
+      "Flexões abertas: 3 séries de 15 repetições",
+      "Tríceps no banco: 3 séries de 12 repetições",
+      "Rosca com elástico: 3 séries de 15 repetições",
+      "Remada unilateral: 3 séries de 12 por lado",
+      "Alongamento de membros superiores: 5 minutos"
+    ]
+  },
+  {
+    id: 8,
+    title: "Yoga Flow Matinal",
+    duration: "25 min",
+    calories: 100,
+    level: "Iniciante",
+    category: "Flexibilidade",
+    exercises: 12,
+    icon: BookOpen,
+    instructions: [
+      "Respiração consciente em posição meditativa: 3 minutos",
+      "Saudação ao sol: 5 repetições",
+      "Postura do guerreiro I e II: 2 minutos cada lado",
+      "Postura da árvore: 1 minuto cada perna",
+      "Postura da criança: 2 minutos",
+      "Torção espinhal sentado: 1 minuto cada lado",
+      "Relaxamento final: 5 minutos"
+    ]
+  },
+  {
+    id: 9,
+    title: "Cardio Intenso",
+    duration: "25 min",
+    calories: 350,
+    level: "Avançado",
+    category: "Cardio",
+    exercises: 8,
+    icon: Flame,
+    instructions: [
+      "Aquecimento dinâmico: 3 minutos",
+      "Sprints no lugar: 30 segundos ON / 30 segundos OFF",
+      "Jumping jacks: 1 minuto",
+      "High knees: 1 minuto",
+      "Tuck jumps: 30 segundos ON / 30 segundos OFF",
+      "Skater jumps: 1 minuto",
+      "Repita circuito 3 vezes",
+      "Caminhada leve: 3 minutos"
+    ]
+  },
+  {
+    id: 10,
+    title: "Glúteos e Posterior",
+    duration: "30 min",
+    calories: 200,
+    level: "Intermediário",
+    category: "Pernas",
+    exercises: 9,
+    icon: TrendingUp,
+    instructions: [
+      "Aquecimento com ativação de glúteos: 4 minutos",
+      "Agachamento sumo: 4 séries de 15 repetições",
+      "Ponte de glúteos: 4 séries de 20 repetições",
+      "Afundo reverso: 3 séries de 12 por perna",
+      "Coice de glúteo: 3 séries de 15 por perna",
+      "Fire hydrant: 3 séries de 15 por lado",
+      "Alongamento focado: 4 minutos"
+    ]
+  },
+  {
+    id: 11,
+    title: "Mobilidade Total",
+    duration: "20 min",
+    calories: 90,
+    level: "Iniciante",
+    category: "Flexibilidade",
+    exercises: 10,
+    icon: BookOpen,
+    instructions: [
+      "Rotação de pescoço: 1 minuto",
+      "Círculos de ombros: 2 minutos",
+      "Rotação de quadril: 2 minutos",
+      "Cat-cow: 2 minutos",
+      "Rotação torácica: 2 minutos",
+      "Círculos de tornozelo: 2 minutos",
+      "Alongamento de flexores de quadril: 3 minutos",
+      "Alongamento geral: 6 minutos"
+    ]
+  },
+  {
+    id: 12,
+    title: "CrossFit Style",
+    duration: "45 min",
+    calories: 400,
+    level: "Avançado",
+    category: "Força",
+    exercises: 16,
+    icon: Dumbbell,
+    instructions: [
+      "Aquecimento funcional: 5 minutos",
+      "21-15-9 reps de:",
+      "Burpees + Agachamentos + Flexões",
+      "Descanso: 2 minutos",
+      "AMRAP 10 minutos:",
+      "10 jump squats + 15 mountain climbers + 20 jumping jacks",
+      "Descanso: 3 minutos",
+      "EMOM 10 minutos: 10 burpees + 15 abdominais",
+      "Desaquecimento: 5 minutos"
+    ]
   }
 ];
 

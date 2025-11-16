@@ -20,6 +20,8 @@ import AdminLogin from "./pages/AdminLogin";
 import ClientLogin from "./pages/ClientLogin";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import Challenges from "./pages/Challenges";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +55,8 @@ const AppContent = () => {
           <Route path="/progresso" element={<Progress />} />
           <Route path="/scanner" element={<FoodScanner />} />
           <Route path="/comunidade" element={<Community />} />
+          <Route path="/desafios" element={<Challenges />} />
+          <Route path="/perfil" element={<Profile />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

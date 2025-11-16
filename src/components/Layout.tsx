@@ -1,4 +1,4 @@
-import { Home, Dumbbell, TrendingUp, Camera, Users, Crown, Shield, LogOut } from "lucide-react";
+import { Home, Dumbbell, TrendingUp, Camera, Users, Crown, Shield, LogOut, Trophy, UserCircle } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Outlet } from "react-router-dom";
 import CinematicThemeSwitcher from "@/components/ui/cinematic-theme-switcher";
@@ -12,6 +12,7 @@ const navItems = [
   { title: "Progresso", url: "/progresso", icon: TrendingUp },
   { title: "Scanner", url: "/scanner", icon: Camera },
   { title: "Comunidade", url: "/comunidade", icon: Users },
+  { title: "Desafios", url: "/desafios", icon: Trophy },
 ];
 
 export function Layout() {
@@ -49,15 +50,27 @@ export function Layout() {
                   <CinematicThemeSwitcher />
                 </div>
                 {user && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={signOut}
-                    title="Sair"
-                    className="h-9 w-9"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Button>
+                  <>
+                    <NavLink to="/perfil">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Perfil"
+                        className="h-9 w-9"
+                      >
+                        <UserCircle className="h-4 w-4" />
+                      </Button>
+                    </NavLink>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={signOut}
+                      title="Sair"
+                      className="h-9 w-9"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -85,6 +98,15 @@ export function Layout() {
               <span className="text-xs">{item.title}</span>
             </NavLink>
           ))}
+          <NavLink
+            to="/perfil"
+            end
+            className="flex flex-col items-center gap-1 px-3 py-2 text-muted-foreground"
+            activeClassName="text-primary"
+          >
+            <UserCircle className="w-5 h-5" />
+            <span className="text-xs">Perfil</span>
+          </NavLink>
         </div>
       </nav>
     </div>

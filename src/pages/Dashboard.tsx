@@ -39,7 +39,7 @@ export default function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/20">
+        <Card className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/20 hover:scale-105 transition-transform">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/20 rounded-lg">
@@ -53,11 +53,11 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:scale-105 transition-transform">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Footprints className="w-5 h-5 text-foreground" />
+              <div className="p-2 bg-blue-500/20 rounded-lg">
+                <Footprints className="w-5 h-5 text-blue-500" />
               </div>
               <div>
                 <p className="text-2xl font-bold">0</p>
@@ -67,11 +67,11 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:scale-105 transition-transform">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Clock className="w-5 h-5 text-foreground" />
+              <div className="p-2 bg-yellow-500/20 rounded-lg">
+                <Clock className="w-5 h-5 text-yellow-500" />
               </div>
               <div>
                 <p className="text-2xl font-bold">0</p>
@@ -81,11 +81,11 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:scale-105 transition-transform">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Trophy className="w-5 h-5 text-foreground" />
+              <div className="p-2 bg-purple-500/20 rounded-lg">
+                <Trophy className="w-5 h-5 text-purple-500" />
               </div>
               <div>
                 <p className="text-2xl font-bold">0</p>
@@ -95,6 +95,22 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Hero Banner */}
+      <Card className="mb-8 border-primary bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+        <CardContent className="pt-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold">Comece Sua Transformação Hoje!</h2>
+              <p className="text-muted-foreground">Acesse treinos exclusivos, desafios e acompanhamento personalizado</p>
+            </div>
+            <Button size="lg" className="shadow-lg shadow-primary/20">
+              <Play className="w-5 h-5 mr-2" />
+              Iniciar Treino
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Today's Workout */}
       <Card className="mb-8 border-primary/30 bg-gradient-to-br from-background to-primary/5">
