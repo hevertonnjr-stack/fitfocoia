@@ -137,43 +137,29 @@ export default function Dashboard() {
           <div>
             <div className="flex justify-between mb-2">
               <span className="text-sm font-medium">Treinos Completos</span>
-              <span className="text-sm text-muted-foreground">4/5</span>
+              <span className="text-sm text-muted-foreground">0/5</span>
             </div>
-            <Progress value={80} className="h-2" />
+            <Progress value={0} className="h-2" />
           </div>
           <div>
             <div className="flex justify-between mb-2">
               <span className="text-sm font-medium">Calorias Queimadas</span>
-              <span className="text-sm text-muted-foreground">1,850/2,000</span>
+              <span className="text-sm text-muted-foreground">0/2,000</span>
             </div>
-            <Progress value={92.5} className="h-2" />
+            <Progress value={0} className="h-2" />
           </div>
           <div>
             <div className="flex justify-between mb-2">
               <span className="text-sm font-medium">Minutos Ativos</span>
-              <span className="text-sm text-muted-foreground">180/200</span>
+              <span className="text-sm text-muted-foreground">0/200</span>
             </div>
-            <Progress value={90} className="h-2" />
+            <Progress value={0} className="h-2" />
           </div>
         </CardContent>
       </Card>
 
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-4">
-        <Card className="hover:border-primary/50 transition-colors cursor-pointer">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <Dumbbell className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Gerar Plano com IA</h3>
-                <p className="text-sm text-muted-foreground">Personalize seu treino</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         <Card className="hover:border-primary/50 transition-colors cursor-pointer">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">

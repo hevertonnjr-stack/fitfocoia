@@ -1,4 +1,4 @@
-import { Home, Dumbbell, TrendingUp, BookOpen, Users, Crown, Shield, LogOut } from "lucide-react";
+import { Home, Dumbbell, TrendingUp, Camera, Users, Crown, Shield, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Outlet } from "react-router-dom";
 import CinematicThemeSwitcher from "@/components/ui/cinematic-theme-switcher";
@@ -10,7 +10,7 @@ const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Treinos", url: "/treinos", icon: Dumbbell },
   { title: "Progresso", url: "/progresso", icon: TrendingUp },
-  { title: "Exercícios", url: "/exercicios", icon: BookOpen },
+  { title: "Scanner", url: "/scanner", icon: Camera },
   { title: "Comunidade", url: "/comunidade", icon: Users },
 ];
 
@@ -42,20 +42,12 @@ export function Layout() {
                     {item.title}
                   </NavLink>
                 ))}
-                {isAdmin && (
-                  <NavLink
-                    to="/admin"
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center gap-2"
-                    activeClassName="bg-primary/10 text-primary"
-                  >
-                    <Shield className="w-4 h-4" />
-                    Admin
-                  </NavLink>
-                )}
               </nav>
               
               <div className="flex items-center gap-2">
-                <CinematicThemeSwitcher />
+                <div className="scale-75">
+                  <CinematicThemeSwitcher />
+                </div>
                 {user && (
                   <Button
                     variant="ghost"
