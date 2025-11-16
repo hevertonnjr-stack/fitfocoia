@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, Dumbbell, Shield, ArrowRight, Zap, Users, Trophy, CheckCircle2, Target, TrendingUp, Award } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
 import { motion } from 'framer-motion';
@@ -93,11 +93,10 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container mx-auto px-4 py-16 max-w-7xl">
         <div className="flex justify-end mb-6">
-          <Button
-            variant="secondary"
-            onClick={() => navigate(isAdmin ? '/admin' : '/admin-login')}
-          >
-            {isAdmin ? 'Ir para Painel Admin' : 'Acesso Administrativo'}
+          <Button variant="secondary" asChild>
+            <Link to={isAdmin ? '/admin' : '/admin-login'}>
+              {isAdmin ? 'Ir para Painel Admin' : 'Acesso Administrativo'}
+            </Link>
           </Button>
         </div>
         {/* Hero Section */}
