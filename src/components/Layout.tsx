@@ -5,7 +5,6 @@ import CinematicThemeSwitcher from "@/components/ui/cinematic-theme-switcher";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import fitfocoLogo from '@/assets/fitfoco-logo.png';
-import AISupport from "@/components/AISupport";
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
@@ -46,7 +45,7 @@ export function Layout() {
                 ))}
               </nav>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <div className="scale-75">
                   <CinematicThemeSwitcher />
                 </div>
@@ -55,19 +54,19 @@ export function Layout() {
                     <NavLink to="/perfil">
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
                         title="Perfil"
-                        className="h-9 w-9"
+                        className="h-8 w-8 p-0"
                       >
                         <UserCircle className="h-4 w-4" />
                       </Button>
                     </NavLink>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
                       onClick={signOut}
                       title="Sair"
-                      className="h-9 w-9"
+                      className="h-8 w-8 p-0"
                     >
                       <LogOut className="h-4 w-4" />
                     </Button>
@@ -83,9 +82,6 @@ export function Layout() {
       <main className="flex-1">
         <Outlet />
       </main>
-
-      {/* AI Support Chat */}
-      {user && <AISupport />}
 
       {/* Mobile Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
