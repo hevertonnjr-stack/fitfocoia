@@ -18,9 +18,10 @@ const AdminLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to admin panel only after login is confirmado e auth carregado
-    if (isAdmin && !authLoading) {
-      navigate('/admin');
+    // Redireciona imediatamente se já for admin
+    if (!authLoading && isAdmin) {
+      console.log('Redirecionando admin para /admin');
+      navigate('/admin', { replace: true });
     }
   }, [isAdmin, authLoading, navigate]);
 
@@ -50,12 +51,11 @@ const AdminLogin = () => {
         });
         setLoading(false);
       } else {
+        console.log('Login bem-sucedido, aguardando redirect...');
         toast({
           title: "Login bem-sucedido",
           description: "Redirecionando para o painel...",
         });
-        // O useEffect vai redirecionar automaticamente quando isAdmin for true
-        setLoading(false);
       }
     } catch (error) {
       toast({
