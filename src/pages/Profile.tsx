@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { User, Lock, Upload, Save, Mail, IdCard } from "lucide-react";
+import { User, Lock, Upload, Save, Mail, IdCard, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AISupport from "@/components/AISupport";
 
@@ -15,9 +15,8 @@ export default function Profile() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
-  const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,16 +30,29 @@ export default function Profile() {
   const loadProfile = async () => {
     if (!user) return;
     
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-    if (data) {
-      setProfile(data);
-      setFullName(data.full_name || "");
-      setAvatarUrl(data.avatar_url || "");
+      if (error) throw error;
+
+      if (data) {
+        setProfile(data);
+        setAvatarUrl(data.avatar_url || "");
+      }
+    } catch (error: any) {
+      console.error("Error loading profile:", error);
+      toast({
+        title: "Erro ao carregar perfil",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +64,6 @@ export default function Profile() {
       const { error } = await supabase
         .from("profiles")
         .update({
-          full_name: fullName,
           avatar_url: avatarUrl,
         })
         .eq("id", user.id);
@@ -61,10 +72,10 @@ export default function Profile() {
 
       toast({
         title: "Perfil atualizado!",
-        description: "Suas informações foram salvas com sucesso.",
+        description: "Sua foto foi salva com sucesso.",
       });
       
-      loadProfile();
+      await loadProfile();
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar",
@@ -152,6 +163,15 @@ export default function Profile() {
   return (
     <div className="container mx-auto px-4 py-6 pb-24 md:pb-6 max-w-4xl">
       <div className="mb-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/dashboard")}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Voltar
+        </Button>
         <h1 className="text-3xl font-bold mb-2">Meu Perfil</h1>
         <p className="text-muted-foreground">Gerencie suas informações pessoais</p>
       </div>
@@ -171,7 +191,7 @@ export default function Profile() {
                 <Avatar className="w-32 h-32">
                   <AvatarImage src={avatarUrl} />
                   <AvatarFallback className="text-2xl">
-                    {fullName?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || "U"}
+                    {user.email?.charAt(0)?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <label htmlFor="avatar-upload">
@@ -193,16 +213,6 @@ export default function Profile() {
 
               <div className="flex-1 w-full space-y-4">
                 <div>
-                  <Label htmlFor="fullName">Nome Completo</Label>
-                  <Input
-                    id="fullName"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Digite seu nome completo"
-                  />
-                </div>
-
-                <div>
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -222,7 +232,7 @@ export default function Profile() {
                   </Label>
                   <div className="px-4 py-3 bg-primary/5 rounded-lg border border-primary/20">
                     <p className="font-mono font-bold text-primary text-lg">
-                      {profile?.user_display_id || "Carregando..."}
+                      {loading ? "Carregando..." : profile?.user_display_id || "ID não disponível"}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">Seu ID único no FitFoco</p>
                   </div>
@@ -230,7 +240,7 @@ export default function Profile() {
 
                 <Button onClick={handleUpdateProfile} disabled={loading} className="w-full md:w-auto">
                   <Save className="w-4 h-4 mr-2" />
-                  Salvar Informações
+                  Salvar Foto
                 </Button>
               </div>
             </div>
@@ -305,7 +315,7 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Suporte AI */}
+        {/* Suporte AI - Sempre visível no perfil */}
         <Card>
           <CardHeader>
             <CardTitle>Suporte Inteligente 24/7</CardTitle>
@@ -314,7 +324,9 @@ export default function Profile() {
             <p className="text-sm text-muted-foreground mb-4">
               Converse com nossa IA treinada para te ajudar com treinos, nutrição e dúvidas sobre o FitFoco.
             </p>
-            <AISupport />
+            <div className="mt-4">
+              <AISupport />
+            </div>
           </CardContent>
         </Card>
       </div>
