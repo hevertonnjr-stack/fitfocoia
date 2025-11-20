@@ -9,9 +9,8 @@ export const useDeviceTracking = () => {
         
         if (!user) return;
 
-        // Obter informações do dispositivo
+        // Obter informações do dispositivo (user_id vem do JWT automaticamente)
         const deviceInfo = {
-          user_id: user.id,
           ip_address: await getIPAddress(),
           user_agent: navigator.userAgent,
           screen_resolution: `${window.screen.width}x${window.screen.height}`,
