@@ -30,9 +30,9 @@ const names = [
 ];
 
 const plans = [
-  { name: 'Plano Mensal', price: '24,90', emoji: '⚡' },
-  { name: 'Plano Trimestral', price: '59,90', emoji: '🔥' },
-  { name: 'Plano Semestral', price: '99,90', emoji: '💪' }
+  { name: 'Plano Mensal', price: '19,90', emoji: '⚡' },
+  { name: 'Plano Trimestral', price: '38,90', emoji: '🔥' },
+  { name: 'Plano Anual', price: '73,90', emoji: '💪' }
 ];
 
 export function SubscriptionNotifications() {

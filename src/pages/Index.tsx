@@ -45,7 +45,7 @@ const Index = () => {
   const plans = [
     {
       name: 'Plano Mensal',
-      price: 'R$ 24,90',
+      price: 'R$ 19,90',
       period: '/mês',
       planType: 'mensal' as const,
       features: [
@@ -61,8 +61,8 @@ const Index = () => {
     },
     {
       name: 'Plano Trimestral',
-      price: 'R$ 57,90',
-      originalPrice: 'R$ 89,70',
+      price: 'R$ 38,90',
+      originalPrice: 'R$ 59,70',
       period: '/3 meses',
       popular: true,
       discount: '35% OFF',
@@ -82,10 +82,10 @@ const Index = () => {
     },
     {
       name: 'Plano Anual',
-      price: 'R$ 99,90',
-      originalPrice: 'R$ 298,80',
+      price: 'R$ 73,90',
+      originalPrice: 'R$ 238,80',
       period: '/ano',
-      discount: '66% OFF',
+      discount: '69% OFF',
       planType: 'anual' as const,
       features: [
         '✓ Tudo dos planos anteriores',
@@ -96,7 +96,7 @@ const Index = () => {
         '✓ Suporte IA 24/7 VIP',
         '✓ Comunidade Elite',
         '✓ Consultoria mensal inclusa',
-        '✓ Economia de 66%',
+        '✓ Economia de 69%',
         '💎 Máxima economia',
         '🎁 Bônus Premium',
         '🏆 Acesso antecipado features'
