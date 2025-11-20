@@ -1,15 +1,17 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface CreateClientRequest {
-  email: string;
-  password: string;
-}
+// Input validation schema
+const createClientSchema = z.object({
+  email: z.string().email('Email inválido').max(255, 'Email muito longo'),
+  password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres').max(100, 'Senha muito longa')
+});
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -30,23 +32,15 @@ serve(async (req) => {
       }
     );
 
-    const { email, password }: CreateClientRequest = await req.json();
-
+    const body = await req.json();
+    
     // Validate input
-    if (!email || !password) {
-      return new Response(
-        JSON.stringify({ error: 'Email e senha são obrigatórios' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
-    }
+    const validated = createClientSchema.parse(body);
 
     // Create user
     const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
+      email: validated.email,
+      password: validated.password,
       email_confirm: true,
     });
 
@@ -80,7 +74,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Client created successfully:', email);
+    console.log('Client created successfully:', validated.email);
 
     return new Response(
       JSON.stringify({ 
@@ -92,8 +86,17 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in create-client function:', error);
+    
+    // Handle validation errors specifically
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ error: 'Dados inválidos: ' + error.errors.map(e => e.message).join(', ') }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     return new Response(
       JSON.stringify({ error: 'Erro interno do servidor' }),
       { 

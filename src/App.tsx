@@ -7,7 +7,6 @@ import { ThemeProvider } from "next-themes";
 import { Layout } from "./components/Layout";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import { SubscriptionNotifications } from "./components/SubscriptionNotifications";
-import { useSetupAdmin } from "./hooks/useSetupAdmin";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Workouts from "./pages/Workouts";
@@ -37,8 +36,6 @@ const ConditionalNotifications = () => {
 };
 
 const AppContent = () => {
-  useSetupAdmin();
-  
   return (
     <>
       <ConditionalNotifications />

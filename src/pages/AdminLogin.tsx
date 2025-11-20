@@ -37,20 +37,9 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      console.log('1. Iniciando login...');
+      console.log('Iniciando login...');
       
-      // Setup admin
-      try {
-        await supabase.functions.invoke('setup-admin', { method: 'POST' });
-      } catch (setupError) {
-        console.log('Setup admin:', setupError);
-      }
-
-      // Aguarda setup completar
-      await new Promise(resolve => setTimeout(resolve, 500));
-
       // Faz login
-      console.log('2. Fazendo login...');
       const { error } = await signIn(email, password);
 
       if (error) {
@@ -64,7 +53,7 @@ const AdminLogin = () => {
         return;
       }
 
-      console.log('3. Login bem-sucedido! Aguardando verificação de role...');
+      console.log('Login bem-sucedido! Aguardando verificação de role...');
       
       toast({
         title: "Login bem-sucedido!",

@@ -1,8 +1,5 @@
 project_id = "mkzblwlxkjhsbkvwkdyn"
 
-[functions.setup-admin]
-verify_jwt = false
-
 [functions.track-device]
 verify_jwt = false
 
