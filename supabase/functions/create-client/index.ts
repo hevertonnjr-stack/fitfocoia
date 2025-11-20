@@ -20,6 +20,15 @@ serve(async (req) => {
   }
 
   try {
+    // Get authorization header to verify admin role
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Autenticação necessária' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Create Supabase client with service role for admin operations
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -31,6 +40,41 @@ serve(async (req) => {
         }
       }
     );
+
+    // Create client with user's token to verify their identity
+    const supabaseUser = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: authHeader }
+        }
+      }
+    );
+
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Usuário não autenticado' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify user has admin role
+    const { data: roleData, error: roleError } = await supabaseAdmin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .single();
+
+    if (roleError || !roleData) {
+      return new Response(
+        JSON.stringify({ error: 'Acesso negado. Apenas administradores podem criar clientes.' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const body = await req.json();
     
@@ -56,15 +100,15 @@ serve(async (req) => {
     }
 
     // Add cliente role
-    const { error: roleError } = await supabaseAdmin
+    const { error: clientRoleError } = await supabaseAdmin
       .from('user_roles')
       .insert({
         user_id: userData.user.id,
         role: 'cliente'
       });
 
-    if (roleError) {
-      console.error('Error creating role:', roleError);
+    if (clientRoleError) {
+      console.error('Error creating role:', clientRoleError);
       return new Response(
         JSON.stringify({ error: 'Erro ao criar role do cliente' }),
         { 

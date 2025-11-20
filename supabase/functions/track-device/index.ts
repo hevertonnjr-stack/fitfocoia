@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 interface DeviceInfo {
-  user_id: string;
   ip_address: string;
   user_agent: string;
   device_type?: string;
@@ -23,12 +22,40 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Autenticação necessária' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    // Create client with user's token to get their ID
+    const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader }
+      }
+    });
+
+    // Get authenticated user from JWT
+    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Usuário não autenticado' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Use service role client for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const deviceInfo: DeviceInfo = await req.json();
-    console.log('Device tracking request:', deviceInfo);
+    console.log('Device tracking request for user:', user.id);
 
     // Parse user agent para extrair informações
     const ua = deviceInfo.user_agent || '';
@@ -50,11 +77,11 @@ const handler = async (req: Request): Promise<Response> => {
       score = 0;
     }
 
-    // Verifica se o dispositivo já existe
+    // Verifica se o dispositivo já existe (use user.id from JWT, not from request)
     const { data: existingDevice, error: checkError } = await supabase
       .from('authorized_devices')
       .select('*')
-      .eq('user_id', deviceInfo.user_id)
+      .eq('user_id', user.id)
       .eq('ip_address', deviceInfo.ip_address)
       .single();
 
@@ -89,7 +116,7 @@ const handler = async (req: Request): Promise<Response> => {
       const { error: insertError } = await supabase
         .from('authorized_devices')
         .insert({
-          user_id: deviceInfo.user_id,
+          user_id: user.id,
           ip_address: deviceInfo.ip_address,
           user_agent: deviceInfo.user_agent,
           device_type: deviceType,
