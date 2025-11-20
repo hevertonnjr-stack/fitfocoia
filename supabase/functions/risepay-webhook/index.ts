@@ -1,26 +1,28 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface RisePayWebhook {
-  event: string;
-  data: {
-    transaction_id: string;
-    status: string;
-    amount: number;
-    customer: {
-      email: string;
-      name: string;
-    };
-    metadata?: {
-      plan_type: string;
-    };
-  };
-}
+// Input validation schema
+const webhookSchema = z.object({
+  event: z.string().min(1).max(100),
+  data: z.object({
+    transaction_id: z.string().min(1).max(255),
+    status: z.string().min(1).max(50),
+    amount: z.number().positive().max(999999),
+    customer: z.object({
+      email: z.string().email().max(255),
+      name: z.string().min(1).max(100)
+    }),
+    metadata: z.object({
+      plan_type: z.string().max(50)
+    }).optional()
+  })
+});
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -33,8 +35,16 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const webhook: RisePayWebhook = await req.json();
-    console.log('RisePay webhook received:', webhook);
+    const body = await req.json();
+    
+    // Validate input
+    const webhook = webhookSchema.parse(body);
+    
+    console.log('RisePay webhook received:', {
+      event: webhook.event,
+      transaction_id: webhook.data.transaction_id,
+      status: webhook.data.status
+    });
 
     // Processar apenas pagamentos aprovados
     if (webhook.event === 'payment.approved' || webhook.data.status === 'approved') {
@@ -83,6 +93,18 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error('Error in risepay-webhook function:', error);
+    
+    // Handle validation errors specifically
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Dados inválidos: ' + error.errors.map(e => e.message).join(', ')
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+    
     return new Response(
       JSON.stringify({ 
         success: false,

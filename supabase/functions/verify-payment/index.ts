@@ -1,18 +1,20 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface PaymentVerificationRequest {
-  transaction_id: string;
-  customer_email: string;
-  customer_name: string;
-  plan_type: 'mensal' | 'trimestral' | 'anual';
-  amount: number;
-}
+// Input validation schema
+const paymentVerificationSchema = z.object({
+  transaction_id: z.string().min(1).max(255),
+  customer_email: z.string().email('Email inválido').max(255),
+  customer_name: z.string().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
+  plan_type: z.enum(['mensal', 'trimestral', 'anual']),
+  amount: z.number().positive('Valor deve ser positivo').max(999999, 'Valor muito alto')
+});
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -25,8 +27,16 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const payload: PaymentVerificationRequest = await req.json();
-    console.log('Payment verification request:', payload);
+    const body = await req.json();
+    
+    // Validate input
+    const payload = paymentVerificationSchema.parse(body);
+    
+    console.log('Payment verification request:', {
+      transaction_id: payload.transaction_id,
+      email: payload.customer_email,
+      plan: payload.plan_type
+    });
 
     // Gerar senha aleatória
     const password = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
@@ -119,6 +129,18 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error('Error in verify-payment function:', error);
+    
+    // Handle validation errors specifically
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Dados inválidos: ' + error.errors.map(e => e.message).join(', ')
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
+    }
+    
     return new Response(
       JSON.stringify({ 
         success: false,
