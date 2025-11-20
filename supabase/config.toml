@@ -1,10 +1,10 @@
 project_id = "mkzblwlxkjhsbkvwkdyn"
 
 [functions.track-device]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-client]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-credentials]
 verify_jwt = false
