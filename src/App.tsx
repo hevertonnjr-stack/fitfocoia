@@ -26,9 +26,9 @@ const queryClient = new QueryClient();
 
 const ConditionalNotifications = () => {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isHomePage = location.pathname === '/';
   
-  if (isAdminRoute) {
+  if (!isHomePage) {
     return null;
   }
   
