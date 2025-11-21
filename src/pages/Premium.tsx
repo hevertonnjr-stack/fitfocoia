@@ -42,6 +42,7 @@ const plans = [
     price: "R$ 18,90",
     period: "/mês",
     popular: false,
+    paymentLink: "https://pay.cakto.com.br/oe4gntt_660033",
   },
   {
     name: "Trimestral",
@@ -49,6 +50,7 @@ const plans = [
     period: "/mês",
     popular: true,
     savings: "Economize 17%",
+    paymentLink: "https://pay.cakto.com.br/3bkvcdo_660047",
   },
   {
     name: "Anual",
@@ -56,6 +58,7 @@ const plans = [
     period: "/mês",
     popular: false,
     savings: "Economize 33%",
+    paymentLink: "https://pay.cakto.com.br/3fyyh99_660056",
   },
 ];
 
@@ -128,6 +131,7 @@ export default function Premium() {
                   className="w-full"
                   size="lg"
                   variant={plan.popular ? "default" : "outline"}
+                  onClick={() => window.open(plan.paymentLink, '_blank')}
                 >
                   Começar Agora
                 </Button>
