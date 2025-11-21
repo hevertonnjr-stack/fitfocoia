@@ -107,7 +107,7 @@ export default function Premium() {
               }`}
             >
               {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">
+                <Badge className="absolute -top-3 left-[calc(50%-1cm)] bg-primary">
                   Mais Procurado
                 </Badge>
               )}
