@@ -30,7 +30,7 @@ const names = [
 ];
 
 const plans = [
-  { name: 'Plano Mensal', price: '19,90', emoji: '⚡' },
+  { name: 'Plano Mensal', price: '18,90', emoji: '⚡' },
   { name: 'Plano Trimestral', price: '38,90', emoji: '🔥' },
   { name: 'Plano Anual', price: '73,90', emoji: '💪' }
 ];
