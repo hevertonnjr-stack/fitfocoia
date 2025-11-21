@@ -38,13 +38,15 @@ const handler = async (req: Request): Promise<Response> => {
       plan: payload.plan_type
     });
 
-    // Gerar senha aleatória
-    const password = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
-    
-    // Criar usuário no auth
+    // Gerar senha aleatória (apenas se o usuário ainda não existir)
+    let password: string | null = null;
+    let userId: string;
+
+    // Tentar criar usuário no auth
+    const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: payload.customer_email,
-      password: password,
+      password: generatedPassword,
       email_confirm: true,
       user_metadata: {
         name: payload.customer_name,
@@ -53,12 +55,37 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (authError) {
+      const code = (authError as any).code;
       console.error('Error creating user:', authError);
-      throw new Error(`Erro ao criar usuário: ${authError.message}`);
-    }
 
-    const userId = authData.user.id;
-    console.log('User created:', userId);
+      if (code === 'email_exists') {
+        console.log('User already exists, fetching existing profile by email');
+        const { data: profiles, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', payload.customer_email)
+          .limit(1);
+
+        if (profileError) {
+          console.error('Error fetching existing user profile:', profileError);
+          throw new Error(`Erro ao buscar usuário existente: ${profileError.message}`);
+        }
+
+        if (!profiles || profiles.length === 0) {
+          throw new Error('Usuário já existe no auth, mas não foi encontrado na tabela profiles');
+        }
+
+        userId = profiles[0].id;
+        password = null; // Não redefinir senha para usuário existente
+        console.log('Using existing user id:', userId);
+      } else {
+        throw new Error(`Erro ao criar usuário: ${authError.message}`);
+      }
+    } else {
+      userId = authData.user.id;
+      password = generatedPassword;
+      console.log('User created:', userId);
+    }
 
     // Calcular data de término da assinatura
     const startDate = new Date();
@@ -97,19 +124,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Subscription created successfully');
 
-    // Enviar email com credenciais
-    const { error: emailError } = await supabase.functions.invoke('send-credentials', {
-      body: {
-        email: payload.customer_email,
-        password: password,
-        name: payload.customer_name,
-        plan_type: payload.plan_type
-      }
-    });
+    // Enviar email com credenciais apenas se o usuário foi criado agora
+    if (password) {
+      const { error: emailError } = await supabase.functions.invoke('send-credentials', {
+        body: {
+          email: payload.customer_email,
+          password: password,
+          name: payload.customer_name,
+          plan_type: payload.plan_type
+        }
+      });
 
-    if (emailError) {
-      console.error('Error sending email:', emailError);
-      // Não falhar se o email não for enviado, mas logar o erro
+      if (emailError) {
+        console.error('Error sending email:', emailError);
+        // Não falhar se o email não for enviado, mas logar o erro
+      }
     }
 
     return new Response(
