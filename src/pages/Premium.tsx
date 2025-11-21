@@ -39,7 +39,7 @@ const features = [
 const plans = [
   {
     name: "Mensal",
-    price: "R$ 29,90",
+    price: "R$ 18,90",
     period: "/mês",
     popular: false,
   },

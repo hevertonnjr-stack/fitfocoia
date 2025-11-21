@@ -22,7 +22,7 @@ const CreateClientWithSubscription = ({ onClientCreated }: { onClientCreated?: (
   const { toast } = useToast();
 
   const planPrices = {
-    mensal: { amount: 24.90, months: 1 },
+    mensal: { amount: 18.90, months: 1 },
     trimestral: { amount: 57.90, months: 3 },
     anual: { amount: 99.90, months: 12 }
   };
@@ -155,7 +155,7 @@ const CreateClientWithSubscription = ({ onClientCreated }: { onClientCreated?: (
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="mensal">Mensal - R$ 24,90</SelectItem>
+                <SelectItem value="mensal">Mensal - R$ 18,90</SelectItem>
                 <SelectItem value="trimestral">Trimestral - R$ 57,90</SelectItem>
                 <SelectItem value="anual">Anual - R$ 99,90</SelectItem>
               </SelectContent>
