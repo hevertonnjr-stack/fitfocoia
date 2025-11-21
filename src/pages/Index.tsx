@@ -23,31 +23,13 @@ const Index = () => {
     once: true,
     margin: "-100px"
   });
-  const handlePlanClick = async (planType: 'mensal' | 'trimestral' | 'anual') => {
-    try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('create-risepay-checkout', {
-        body: {
-          plan_type: planType
-        }
-      });
-      let paymentUrl: string | undefined = data?.payment_url;
-      if (error || !paymentUrl) {
-        if (planType === 'mensal') {
-          paymentUrl = 'https://pay.risepay.com.br/Pay/63b5cd42ee0f49578a63ab025c05f64f';
-        } else {
-          console.error('Erro ao gerar link de pagamento:', error);
-          toast.error('Erro ao processar. Tente novamente.');
-          return;
-        }
-      }
-      window.location.assign(paymentUrl!);
-    } catch (error) {
-      console.error('Erro:', error);
-      toast.error('Erro ao processar pagamento. Tente novamente.');
-    }
+  const handlePlanClick = (planType: 'mensal' | 'trimestral' | 'anual') => {
+    const paymentLinks = {
+      mensal: 'https://pay.cakto.com.br/oe4gntt_660033',
+      trimestral: 'https://pay.cakto.com.br/3bkvcdo_660047',
+      anual: 'https://pay.cakto.com.br/3fyyh99_660056'
+    };
+    window.location.assign(paymentLinks[planType]);
   };
   const plans = [{
     name: 'Plano Mensal',
