@@ -11,7 +11,7 @@ const Checkout = () => {
   const planDetails = {
     mensal: {
       name: 'Plano Mensal',
-      price: 'R$ 24,90',
+      price: 'R$ 18,90',
       period: '/mês',
       risePayLink: 'https://risepay.com.br/checkout/mensal-fitfoco',
       features: [
