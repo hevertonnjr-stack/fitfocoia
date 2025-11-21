@@ -8,10 +8,16 @@ const corsHeaders = {
 };
 
 // Mapeamento dos produtos Cakto para tipos de plano
+// Usando os IDs dos links de checkout da Cakto
 const productPlanMap: Record<string, string> = {
   'oe4gntt_660033': 'mensal',
   '3bkvcdo_660047': 'trimestral',
   '3fyyh99_660056': 'anual',
+};
+
+// Também mapear por offer IDs se necessário
+const offerPlanMap: Record<string, string> = {
+  // Adicione aqui os IDs das ofertas quando souber
 };
 
 // Valores dos planos
@@ -21,31 +27,35 @@ const planPrices: Record<string, number> = {
   'anual': 73.90,
 };
 
-// Schema de validação flexível para o webhook da Cakto
+// Schema de validação para o formato real do webhook da Cakto
 const caktoWebhookSchema = z.object({
-  event: z.string().optional(),
-  order: z.object({
+  secret: z.string().optional(),
+  event: z.string(),
+  data: z.object({
     id: z.string().optional(),
-    status: z.string().optional(),
-    amount: z.number().optional(),
+    refId: z.string().optional(),
+    customer: z.object({
+      name: z.string(),
+      email: z.string().email(),
+      phone: z.string().optional(),
+      docNumber: z.string().optional(),
+    }),
     product: z.object({
       id: z.string().optional(),
+      short_id: z.string().optional(),
       name: z.string().optional(),
     }).optional(),
-    customer: z.object({
-      email: z.string().email(),
-      name: z.string(),
-    }),
-  }).optional(),
-  // Campos alternativos caso a estrutura seja diferente
-  customer: z.object({
-    email: z.string().email(),
-    name: z.string(),
-  }).optional(),
-  product_id: z.string().optional(),
-  amount: z.number().optional(),
-  status: z.string().optional(),
-}).passthrough(); // Permite campos adicionais
+    offer: z.object({
+      id: z.string().optional(),
+      name: z.string().optional(),
+      price: z.number().optional(),
+    }).optional(),
+    status: z.string(),
+    amount: z.number(),
+    baseAmount: z.number().optional(),
+    checkoutUrl: z.string().optional(),
+  }),
+}).passthrough();
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -67,30 +77,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Validação flexível
     const webhook = caktoWebhookSchema.parse(body);
     
-    // Extração de dados com fallbacks para diferentes estruturas
-    let customerEmail: string;
-    let customerName: string;
-    let productId: string | undefined;
-    let amount: number | undefined;
-    let status: string | undefined;
-
-    // Tentar extrair do objeto order primeiro
-    if (webhook.order) {
-      customerEmail = webhook.order.customer.email;
-      customerName = webhook.order.customer.name;
-      productId = webhook.order.product?.id;
-      amount = webhook.order.amount;
-      status = webhook.order.status;
-    } else if (webhook.customer) {
-      // Fallback para estrutura alternativa
-      customerEmail = webhook.customer.email;
-      customerName = webhook.customer.name;
-      productId = webhook.product_id;
-      amount = webhook.amount;
-      status = webhook.status;
-    } else {
-      throw new Error('Could not extract customer data from webhook');
-    }
+    // Extração de dados da estrutura real da Cakto
+    const customerEmail = webhook.data.customer.email;
+    const customerName = webhook.data.customer.name;
+    const productId = webhook.data.product?.short_id || webhook.data.product?.id;
+    const offerId = webhook.data.offer?.id;
+    const amount = webhook.data.amount;
+    const status = webhook.data.status;
+    const checkoutUrl = webhook.data.checkoutUrl || '';
 
     console.log('Extracted data:', {
       email: customerEmail,
@@ -101,11 +95,13 @@ const handler = async (req: Request): Promise<Response> => {
       event: webhook.event,
     });
 
-    // Verificar se o pagamento foi aprovado
+    // Verificar se o pagamento foi aprovado ou assinatura criada
     const isApproved = 
-      webhook.event?.includes('approved') || 
-      status?.toLowerCase() === 'approved' ||
+      webhook.event === 'subscription_created' ||
+      webhook.event === 'order_paid' ||
+      webhook.event === 'payment_approved' ||
       status?.toLowerCase() === 'paid' ||
+      status?.toLowerCase() === 'approved' ||
       status?.toLowerCase() === 'completed';
 
     if (!isApproved) {
@@ -122,20 +118,36 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Tentar mapear o produto para um tipo de plano
+    // Tentar mapear o produto/oferta para um tipo de plano
     let planType: string = 'mensal'; // Default
     
-    if (productId) {
-      // Extrair o ID do produto do link (caso venha como URL)
-      const productIdMatch = productId.match(/([a-z0-9_]+)_\d+/i);
-      const extractedId = productIdMatch ? productIdMatch[0] : productId;
-      
-      if (productPlanMap[extractedId]) {
-        planType = productPlanMap[extractedId];
-        console.log(`Product ${extractedId} mapped to plan: ${planType}`);
-      } else {
-        console.warn(`Product ID ${extractedId} not found in mapping, using default: mensal`);
+    // Extrair o ID do produto do checkoutUrl se disponível
+    let extractedCheckoutId: string | undefined;
+    if (checkoutUrl) {
+      const urlMatch = checkoutUrl.match(/pay\.cakto\.com\.br\/([a-z0-9_]+)/i);
+      if (urlMatch) {
+        extractedCheckoutId = urlMatch[1];
       }
+    }
+    
+    // Tentar mapear na seguinte ordem:
+    // 1. Pelo ID extraído do checkoutUrl
+    if (extractedCheckoutId && productPlanMap[extractedCheckoutId]) {
+      planType = productPlanMap[extractedCheckoutId];
+      console.log(`Checkout URL ${extractedCheckoutId} mapped to plan: ${planType}`);
+    }
+    // 2. Pelo offer ID
+    else if (offerId && offerPlanMap[offerId]) {
+      planType = offerPlanMap[offerId];
+      console.log(`Offer ${offerId} mapped to plan: ${planType}`);
+    }
+    // 3. Pelo product ID
+    else if (productId && productPlanMap[productId]) {
+      planType = productPlanMap[productId];
+      console.log(`Product ${productId} mapped to plan: ${planType}`);
+    }
+    else {
+      console.warn(`Could not map product/offer to plan. Using default: mensal. CheckoutURL: ${checkoutUrl}, ProductID: ${productId}, OfferID: ${offerId}`);
     }
 
     // Usar o valor do plano mapeado ou o valor recebido
@@ -151,7 +163,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Chamar função de verificação de pagamento
     const { error: verifyError } = await supabase.functions.invoke('verify-payment', {
       body: {
-        transaction_id: webhook.order?.id || `cakto_${Date.now()}`,
+        transaction_id: webhook.data.id || webhook.data.refId || `cakto_${Date.now()}`,
         customer_email: customerEmail,
         customer_name: customerName,
         plan_type: planType,
