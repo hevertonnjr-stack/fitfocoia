@@ -59,25 +59,27 @@ const handler = async (req: Request): Promise<Response> => {
       console.error('Error creating user:', authError);
 
       if (code === 'email_exists') {
-        console.log('User already exists, fetching existing profile by email');
-        const { data: profiles, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', payload.customer_email)
-          .limit(1);
+        console.log('User already exists, fetching from auth by email');
 
-        if (profileError) {
-          console.error('Error fetching existing user profile:', profileError);
-          throw new Error(`Erro ao buscar usuário existente: ${profileError.message}`);
+        const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers({
+          page: 1,
+          perPage: 100,
+        });
+
+        if (usersError) {
+          console.error('Error listing users:', usersError);
+          throw new Error(`Erro ao buscar usuário existente: ${usersError.message}`);
         }
 
-        if (!profiles || profiles.length === 0) {
-          throw new Error('Usuário já existe no auth, mas não foi encontrado na tabela profiles');
+        const existingUser = usersData.users.find((u) => u.email === payload.customer_email);
+
+        if (!existingUser) {
+          throw new Error('Usuário já existe no auth, mas não foi possível encontrá-lo pela lista de usuários');
         }
 
-        userId = profiles[0].id;
+        userId = existingUser.id;
         password = null; // Não redefinir senha para usuário existente
-        console.log('Using existing user id:', userId);
+        console.log('Using existing user id from auth:', userId);
       } else {
         throw new Error(`Erro ao criar usuário: ${authError.message}`);
       }
