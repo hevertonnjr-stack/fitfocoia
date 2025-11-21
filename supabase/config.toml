@@ -15,6 +15,9 @@ verify_jwt = false
 [functions.risepay-webhook]
 verify_jwt = false
 
+[functions.cakto-webhook]
+verify_jwt = false
+
 [functions.analyze-food]
 verify_jwt = false
 
