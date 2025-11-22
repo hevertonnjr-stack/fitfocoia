@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { Resend } from "https://esm.sh/resend@4.0.0";
 
-const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY");
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,169 +32,143 @@ const handler = async (req: Request): Promise<Response> => {
       anual: 'Plano Anual'
     };
 
-    // Preparar dados do email para SendGrid
-    const emailData = {
-      personalizations: [{
-        to: [{ email }],
-        subject: "🎉 Bem-vindo ao FitFoco! Suas Credenciais de Acesso"
-      }],
-      from: {
-        email: "noreply@fitfoco.com",
-        name: "FitFoco"
-      },
-      content: [{
-        type: "text/html",
-        value: `
+    const planTypeLabels: Record<string, string> = {
+      mensal: 'Plano Mensal',
+      trimestral: 'Plano Trimestral',
+      semestral: 'Plano Semestral',
+      anual: 'Plano Anual'
+    };
+
+    const emailResponse = await resend.emails.send({
+      from: "FitFoco <onboarding@resend.dev>",
+      to: [email],
+      subject: "🎉 Bem-vindo ao FitFoco! Suas Credenciais de Acesso",
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
-          <style>
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-              line-height: 1.6;
-              color: #333;
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-            }
-            .header {
-              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-              color: white;
-              padding: 30px;
-              text-align: center;
-              border-radius: 10px 10px 0 0;
-            }
-            .content {
-              background: #f9fafb;
-              padding: 30px;
-              border-radius: 0 0 10px 10px;
-            }
-            .credentials {
-              background: white;
-              border: 2px solid #10b981;
-              border-radius: 8px;
-              padding: 20px;
-              margin: 20px 0;
-            }
-            .credential-item {
-              margin: 15px 0;
-              padding: 10px;
-              background: #f0fdf4;
-              border-radius: 5px;
-            }
-            .credential-label {
-              font-weight: bold;
-              color: #059669;
-              display: block;
-              margin-bottom: 5px;
-            }
-            .credential-value {
-              font-size: 18px;
-              font-weight: 600;
-              color: #1f2937;
-              font-family: 'Courier New', monospace;
-            }
-            .button {
-              display: inline-block;
-              background: #10b981;
-              color: white;
-              padding: 15px 30px;
-              text-decoration: none;
-              border-radius: 5px;
-              font-weight: bold;
-              margin: 20px 0;
-            }
-            .footer {
-              text-align: center;
-              color: #6b7280;
-              font-size: 14px;
-              margin-top: 30px;
-              padding-top: 20px;
-              border-top: 1px solid #e5e7eb;
-            }
-            .highlight {
-              color: #10b981;
-              font-weight: bold;
-            }
-          </style>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Bem-vindo ao FitFoco</title>
         </head>
-        <body>
-          <div class="header">
-            <h1>🎉 Pagamento Confirmado!</h1>
-            <p style="margin: 0; font-size: 18px;">Bem-vindo ao FitFoco, ${name}!</p>
-          </div>
-          
-          <div class="content">
-            <p>Olá <strong>${name}</strong>,</p>
-            
-            <p>Seu pagamento foi <span class="highlight">confirmado com sucesso</span> e sua conta FitFoco está pronta!</p>
-            
-            <p>Você adquiriu o <strong>${planNames[plan_type]}</strong>. Agora você tem acesso total a todos os treinos e funcionalidades premium!</p>
-            
-            <div class="credentials">
-              <h2 style="color: #059669; margin-top: 0;">🔐 Suas Credenciais de Acesso</h2>
-              
-              <div class="credential-item">
-                <span class="credential-label">📧 Email:</span>
-                <span class="credential-value">${email}</span>
-              </div>
-              
-              <div class="credential-item">
-                <span class="credential-label">🔑 Senha:</span>
-                <span class="credential-value">${password}</span>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 40px;">
+              <div style="background: white; border-radius: 20px; padding: 20px; display: inline-block; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                <h1 style="margin: 0; color: #667eea; font-size: 32px; font-weight: bold;">💪 FitFoco</h1>
               </div>
             </div>
-            
-            <p style="background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 5px;">
-              <strong>⚠️ Importante:</strong> Guarde esta senha em um local seguro. Você pode alterá-la após o primeiro login.
-            </p>
-            
-            <center>
-              <a href="${Deno.env.get('SUPABASE_URL')?.replace('supabase.co', 'lovable.app') || 'https://seu-app.lovable.app'}/client-login" class="button">
-                🚀 Acessar Minha Conta
-              </a>
-            </center>
-            
-            <h3 style="color: #059669;">💪 O que você pode fazer agora:</h3>
-            <ul>
-              <li>Acessar todos os treinos personalizados</li>
-              <li>Acompanhar seu progresso em tempo real</li>
-              <li>Conectar com a comunidade FitFoco</li>
-              <li>Receber suporte prioritário</li>
-            </ul>
-            
-            <p><strong>Está pronto para transformar seu corpo e sua vida?</strong> Faça login agora e comece sua jornada!</p>
-            
-            <div class="footer">
-              <p>Este é um email automático. Se você não realizou esta compra, entre em contato conosco imediatamente.</p>
-              <p>© ${new Date().getFullYear()} FitFoco. Todos os direitos reservados.</p>
+
+            <!-- Main Card -->
+            <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);">
+              <h2 style="color: #1a202c; font-size: 28px; margin: 0 0 10px 0; font-weight: bold;">Bem-vindo, ${name}! 🎉</h2>
+              
+              <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0;">
+                Estamos muito felizes em ter você conosco! Sua jornada de transformação começa agora.
+              </p>
+
+              <!-- Plan Badge -->
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; margin: 30px 0; text-align: center;">
+                <p style="color: white; font-size: 14px; margin: 0 0 5px 0; opacity: 0.9;">Seu Plano</p>
+                <p style="color: white; font-size: 24px; font-weight: bold; margin: 0;">${planTypeLabels[plan_type] || plan_type}</p>
+              </div>
+
+              <!-- Credentials Box -->
+              <div style="background: #f7fafc; border-left: 4px solid #667eea; border-radius: 8px; padding: 25px; margin: 30px 0;">
+                <h3 style="color: #2d3748; font-size: 18px; margin: 0 0 20px 0; font-weight: bold;">🔐 Suas Credenciais de Acesso</h3>
+                
+                <div style="margin-bottom: 15px;">
+                  <p style="color: #718096; font-size: 14px; margin: 0 0 5px 0; font-weight: 600;">Email:</p>
+                  <p style="color: #2d3748; font-size: 16px; margin: 0; font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px;">${email}</p>
+                </div>
+
+                <div>
+                  <p style="color: #718096; font-size: 14px; margin: 0 0 5px 0; font-weight: 600;">Senha:</p>
+                  <p style="color: #2d3748; font-size: 16px; margin: 0; font-family: 'Courier New', monospace; background: white; padding: 10px; border-radius: 6px;">${password}</p>
+                </div>
+              </div>
+
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 35px 0;">
+                <a href="https://fitfoco.lovable.app/client-login" 
+                   style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-size: 16px; font-weight: bold; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); transition: transform 0.2s;">
+                  🚀 Acessar FitFoco
+                </a>
+              </div>
+
+              <!-- Security Notice -->
+              <div style="background: #fff5f5; border-left: 4px solid #fc8181; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <p style="color: #742a2a; font-size: 14px; margin: 0; line-height: 1.6;">
+                  <strong>⚠️ Importante:</strong> Por segurança, recomendamos que você altere sua senha após o primeiro acesso.
+                </p>
+              </div>
+
+              <!-- Features -->
+              <div style="margin: 30px 0;">
+                <h3 style="color: #2d3748; font-size: 18px; margin: 0 0 20px 0; font-weight: bold;">✨ O que você pode fazer:</h3>
+                
+                <div style="display: grid; gap: 15px;">
+                  <div style="display: flex; align-items: start;">
+                    <span style="color: #667eea; font-size: 24px; margin-right: 15px;">🏋️</span>
+                    <div>
+                      <strong style="color: #2d3748; font-size: 15px;">Treinos Personalizados</strong>
+                      <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">Acesse treinos exclusivos criados para você</p>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: start;">
+                    <span style="color: #667eea; font-size: 24px; margin-right: 15px;">📊</span>
+                    <div>
+                      <strong style="color: #2d3748; font-size: 15px;">Acompanhe seu Progresso</strong>
+                      <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">Veja sua evolução em tempo real</p>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: start;">
+                    <span style="color: #667eea; font-size: 24px; margin-right: 15px;">🎯</span>
+                    <div>
+                      <strong style="color: #2d3748; font-size: 15px;">Desafios Diários</strong>
+                      <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">Complete desafios e ganhe recompensas</p>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: start;">
+                    <span style="color: #667eea; font-size: 24px; margin-right: 15px;">🤖</span>
+                    <div>
+                      <strong style="color: #2d3748; font-size: 15px;">Suporte IA 24/7</strong>
+                      <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">Tire dúvidas a qualquer momento</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Support -->
+              <div style="text-align: center; padding-top: 30px; border-top: 2px solid #e2e8f0; margin-top: 30px;">
+                <p style="color: #718096; font-size: 14px; margin: 0 0 10px 0;">
+                  Precisa de ajuda? Estamos aqui para você!
+                </p>
+                <p style="color: #667eea; font-size: 14px; margin: 0; font-weight: 600;">
+                  📧 suporte@fitfoco.com
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; padding: 20px;">
+              <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 0;">
+                © 2024 FitFoco. Transformando vidas através do fitness.
+              </p>
             </div>
           </div>
         </body>
         </html>
-      `
-      }]
-    };
-
-    // Enviar email via SendGrid API
-    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${SENDGRID_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(emailData),
+      `,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("SendGrid API error:", errorText);
-      throw new Error(`SendGrid API error: ${response.status} - ${errorText}`);
-    }
+    console.log("Email sent successfully:", emailResponse);
 
-    console.log("Email sent successfully via SendGrid");
-
-    return new Response(JSON.stringify({ success: true, message: "Email sent successfully" }), {
+    return new Response(JSON.stringify(emailResponse), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
