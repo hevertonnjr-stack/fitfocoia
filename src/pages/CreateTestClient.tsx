@@ -12,7 +12,7 @@ export default function CreateTestClient() {
   const [email, setEmail] = useState('neymarjunior@gmail.com');
   const [password, setPassword] = useState('ney010');
   const [planType, setPlanType] = useState('mensal');
-  const [amount, setAmount] = useState('49.90');
+  const [amount, setAmount] = useState('18.90');
   const [durationMonths, setDurationMonths] = useState('1');
 
   const handleCreateClient = async (e: React.FormEvent) => {
