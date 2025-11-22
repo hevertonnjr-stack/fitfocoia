@@ -33,7 +33,7 @@ const Index = () => {
   };
   const plans = [{
     name: 'Plano Mensal',
-    price: 'R$ 19,90',
+    price: 'R$ 18,90',
     period: '/mês',
     planType: 'mensal' as const,
     features: ['✓ Acesso completo ao app', '✓ Todos os treinos personalizados', '✓ Scanner de Kcal de alimentos com IA', '✓ Desafios diários gamificados', '✓ Acompanhamento detalhado', '✓ Suporte IA 24/7', '✓ Comunidade exclusiva', '✓ Renovação automática']

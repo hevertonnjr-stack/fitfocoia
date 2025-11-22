@@ -69,7 +69,7 @@ const handler = async (req: Request): Promise<Response> => {
       .insert({
         user_id: userId,
         plan_type: planType || 'mensal',
-        amount: amount || 49.90,
+        amount: amount || 18.90,
         status: 'active',
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
