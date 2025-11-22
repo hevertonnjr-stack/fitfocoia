@@ -21,6 +21,7 @@ import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Challenges from "./pages/Challenges";
+import CreateTestClient from "./pages/CreateTestClient";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const AppContent = () => {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/client-login" element={<ClientLogin />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/create-test-client" element={<CreateTestClient />} />
         {/* Admin fora do Layout para ser um painel separado */}
         <Route path="/admin" element={<ProtectedAdminRoute><Admin /></ProtectedAdminRoute>} />
         <Route element={<Layout />}>
