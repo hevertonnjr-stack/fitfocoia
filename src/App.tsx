@@ -23,6 +23,7 @@ import Profile from "./pages/Profile";
 import Challenges from "./pages/Challenges";
 import CreateTestClient from "./pages/CreateTestClient";
 import CreateAdminUser from "./pages/CreateAdminUser";
+import QuickAdminSetup from "./pages/QuickAdminSetup";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const AppContent = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/create-test-client" element={<CreateTestClient />} />
         <Route path="/create-admin" element={<CreateAdminUser />} />
+        <Route path="/setup-admin" element={<QuickAdminSetup />} />
         {/* Admin fora do Layout para ser um painel separado */}
         <Route path="/admin" element={<ProtectedAdminRoute><Admin /></ProtectedAdminRoute>} />
         <Route element={<Layout />}>
