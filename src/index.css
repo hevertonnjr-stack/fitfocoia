@@ -185,16 +185,14 @@ All colors MUST be HSL.
   }
 }
 
-/* Hide Lovable badge */
+/* Hide Lovable badge without affecting app iframe */
 a[href*="lovable.dev"],
-iframe[src*="lovable.dev"],
-div[style*="Edit with Lovable"],
 lovable-badge,
-[data-lovable-badge] {
+[data-lovable-badge],
+[href*="lovable.dev"][target="_blank"] {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-  position: absolute !important;
-  z-index: -9999 !important;
 }
+
