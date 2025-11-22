@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@4.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,11 +31,19 @@ const handler = async (req: Request): Promise<Response> => {
       anual: 'Plano Anual'
     };
 
-    const emailResponse = await resend.emails.send({
-      from: "FitFoco <onboarding@resend.dev>",
-      to: [email],
-      subject: "🎉 Bem-vindo ao FitFoco! Suas Credenciais de Acesso",
-      html: `
+    // Preparar dados do email para SendGrid
+    const emailData = {
+      personalizations: [{
+        to: [{ email }],
+        subject: "🎉 Bem-vindo ao FitFoco! Suas Credenciais de Acesso"
+      }],
+      from: {
+        email: "noreply@fitfoco.com",
+        name: "FitFoco"
+      },
+      content: [{
+        type: "text/html",
+        value: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -164,12 +171,29 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         </body>
         </html>
-      `,
+      `
+      }]
+    };
+
+    // Enviar email via SendGrid API
+    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(emailData),
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("SendGrid API error:", errorText);
+      throw new Error(`SendGrid API error: ${response.status} - ${errorText}`);
+    }
 
-    return new Response(JSON.stringify(emailResponse), {
+    console.log("Email sent successfully via SendGrid");
+
+    return new Response(JSON.stringify({ success: true, message: "Email sent successfully" }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
